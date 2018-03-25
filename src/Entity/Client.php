@@ -24,13 +24,12 @@ class Client
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn()
+     * @ORM\JoinColumn(nullable=true)
      */
     private $leader;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="client")
-     *
      */
     private $users;
 

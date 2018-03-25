@@ -19,7 +19,7 @@ class PhoneController extends FOSRestController
 {
 
     /**
-     * @param $phone
+     * @param Phone $phone
      * @Rest\Get(
      *     path = "/phones/{id}",
      *     name = "phone_show",
