@@ -15,5 +15,6 @@ In addition to the Symfony framework this project uses several bundles:
 * [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle)
 * [WillDurand/Hateoas](https://github.com/willdurand/Hateoas)
 * [NelmioApiDocBundle](https://github.com/nelmio/NelmioApiDocBundle)
+* [WhiteOctoberPagerfantaBundle](https://github.com/whiteoctober/WhiteOctoberPagerfantaBundle)
 * and [Guzzle](https://github.com/guzzle/guzzle)
 
