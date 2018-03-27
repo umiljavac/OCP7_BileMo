@@ -28,7 +28,6 @@ class PhoneController extends FOSRestController
      *     requirements={"id"="\d+"}
      * )
      * @return \Symfony\Component\HttpFoundation\Response
-     * @Security("has_role('ROLE_USER')")
      */
     public function showAction(Phone $phone)
     {
@@ -43,7 +42,6 @@ class PhoneController extends FOSRestController
      *     name="phone_list_all",
      * )
      * @return \Symfony\Component\HttpFoundation\Response
-     * @Security("has_role('ROLE_USER')")
      */
     public function listAction()
     {
@@ -86,7 +84,6 @@ class PhoneController extends FOSRestController
      * )
      * @Rest\View()
      * @return mixed
-     * @Security("has_role('ROLE_USER')")
      */
     public function listWithCriteriaAction(ParamFetcherInterface $paramFetcher)
     {

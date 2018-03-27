@@ -38,6 +38,11 @@ class SecurityController extends FOSRestController
     {
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository('App:User')->findOneBy(array('username' => $username));
+
+        if (!$user) {
+            throw $this->createNotFoundException();
+        }
+
         if ($passwordEncoder->isPasswordValid($user, $password)) {
             $token = $this->get('lexik_jwt_authentication.encoder')
                 ->encode([
