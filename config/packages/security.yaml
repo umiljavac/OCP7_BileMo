@@ -24,6 +24,10 @@ security:
             # form_login: true
             # https://symfony.com/doc/current/security/form_login_setup.html
 
+            guard:
+                authenticators:
+                    - 'jwt_token_authenticator'
+
         login:
             pattern:  ^/api/login
             stateless: true
