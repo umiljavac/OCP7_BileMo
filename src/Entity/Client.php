@@ -24,12 +24,12 @@ class Client
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=true, onDelete="cascade")
      */
     private $leader;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="client")
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="client", orphanRemoval=true)
      */
     private $users;
 
