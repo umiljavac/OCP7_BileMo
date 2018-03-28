@@ -48,7 +48,7 @@ class SecurityController extends FOSRestController
                 ->encode([
                     'username' => $user->getUsername(),
                     'roles' => $user->getRoles(),
-                    'client' => $user->getClient()->getName(),
+                    'client' => $user->getClient()->getid(),
                     'exp' => time() + 3600 // 1 hour expiration
                 ]);
             return new JsonResponse(['token' => $token]);

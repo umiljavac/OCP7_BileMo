@@ -16,8 +16,8 @@ class SecurityControllerTest extends BaseTest
     public function testApiLogin()
     {
         $roles = ['ROLE_SUPER_ADMIN'];
-        $client = 'bilemo';
-        $response = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => self::SUPER_ADMIN, 'password' => self::SUPER_ADMIN]]);
+        $client = 1;
+        $response = $this->client->request('POST', self::URI_LOGIN, ['form_params' => ['username' => self::SUPER_ADMIN, 'password' => self::SUPER_ADMIN]]);
         $body = json_decode($response->getBody(), true);
         $decodedToken = $this->getService('lexik_jwt_authentication.encoder')->decode($body['token']);
 
@@ -33,10 +33,10 @@ class SecurityControllerTest extends BaseTest
 
     public function testTokenAuthorizationHeader()
     {
-        $responseLogin = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => self::USER, 'password' => self::USER]]);
+        $responseLogin = $this->client->request('POST', self::URI_LOGIN, ['form_params' => ['username' => self::USER, 'password' => self::USER]]);
         $bodyLogin = json_decode($responseLogin->getBody(), true);
         $token = $bodyLogin['token'];
-        $responseGet = $this->client->request('GET', self::GET_URI . '/1', [
+        $responseGet = $this->client->request('GET', self::URI_PHONE . '/1', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token
             ]

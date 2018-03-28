@@ -1,4 +1,6 @@
 {
+    "name": "bilemo/ocp7",
+    "description": "seventh project of php/symfony openclassrooms cursus",
     "type": "project",
     "license": "proprietary",
     "require": {

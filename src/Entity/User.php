@@ -3,11 +3,17 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Security\Core\User\UserInterface;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+
 
 /**
  * @ORM\Table("api_users")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ExclusionPolicy("all")
  */
 class User implements UserInterface
 {
@@ -15,16 +21,19 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Expose()
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=35, unique=true)
+     * @Expose()
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=190, unique=true)
+     * @Expose()
      */
     private $email;
 
@@ -37,6 +46,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=190)
+     * @Expose()
      */
     private $roles;
 

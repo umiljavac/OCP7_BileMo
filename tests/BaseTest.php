@@ -11,14 +11,15 @@ namespace App\Tests;
 use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class BaseTest extends KernelTestCase
+abstract class BaseTest extends KernelTestCase
 {
     private static $staticClient;
 
     protected $client;
 
-    const POST_LOGIN = '/api/login';
-    const GET_URI = '/phones';
+    const URI_LOGIN = '/api/login';
+    const URI_PHONE = '/api/phones';
+    const URI_CLIENT = '/api/clients';
     const USER = 'alphauser1';
     const ADMIN = 'alphaleader';
     const SUPER_ADMIN = 'boss';
@@ -76,7 +77,7 @@ class BaseTest extends KernelTestCase
 
     protected function generateAuthHeaders($userType)
     {
-        $responseLogin = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => $userType, 'password' => $userType ]]);
+        $responseLogin = $this->client->request('POST', self::URI_LOGIN, ['form_params' => ['username' => $userType, 'password' => $userType ]]);
         $bodyLogin = json_decode($responseLogin->getBody(), true);
         $token = $bodyLogin['token'];
         $headers = ['Authorization' => 'Bearer ' . $token];

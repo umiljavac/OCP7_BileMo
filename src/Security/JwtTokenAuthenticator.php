@@ -87,7 +87,7 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        // TODO: Implement onAuthenticationFailure() method.
+        // wip
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
@@ -103,7 +103,20 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
     public function start(Request $request, AuthenticationException $authException = null)
     {
         return new JsonResponse([
-            'error' => 'authorization required : did you send a valid Authorization header ?'
+            'error' => 'authorization required : did you send a valid Authorization header ? Re-login will probably fix that !'
         ], 401);
+    }
+
+    // just added : must confirm
+    public function getUserUtils(Request $request)
+    {
+        $token = $this->getCredentials($request);
+        try {
+            $data = $this->jwtEncoder->decode($token);
+        } catch (JWTDecodeFailureException $e) {
+
+            throw new CustomUserMessageAuthenticationException('Invalid Token');
+        }
+        return $data;
     }
 }

@@ -8,7 +8,6 @@
 
 namespace App\Controller;
 
-
 use App\Entity\Phone;
 use App\Representation\Phones;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -23,12 +22,12 @@ class PhoneController extends FOSRestController
     /**
      * @param Phone $phone
      * @Rest\Get(
-     *     path="/phones/{id}",
+     *     path="/api/phones/{id}",
      *     name="phone_show",
      *     requirements={"id"="\d+"}
      * )
      * @return \Symfony\Component\HttpFoundation\Response
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function showAction(Phone $phone)
     {
@@ -39,11 +38,11 @@ class PhoneController extends FOSRestController
 
     /**
      * @Rest\Get(
-     *     path="/phones/all",
+     *     path="/api/phones/all",
      *     name="phone_list_all",
      * )
      * @return \Symfony\Component\HttpFoundation\Response
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function listAction()
     {
@@ -57,7 +56,7 @@ class PhoneController extends FOSRestController
     /**
      * @param ParamFetcherInterface $paramFetcher
      * @Rest\Get(
-     *     path="/phones",
+     *     path="/api/phones",
      *     name="phone_list_criteria"
      * )
      * @Rest\QueryParam(
@@ -86,7 +85,7 @@ class PhoneController extends FOSRestController
      * )
      * @Rest\View()
      * @return mixed
-     * @Security("has_role('ROLE_USER')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function listWithCriteriaAction(ParamFetcherInterface $paramFetcher)
     {
@@ -97,8 +96,6 @@ class PhoneController extends FOSRestController
             $paramFetcher->get('offset')
         );
 
-       // return $pager->getCurrentPageResults();
-      //  $view = $this->view($pager->getCurrentPageResults(), 200)
         $view = $this->view(new Phones($pager), 200)
             ->setHeader('Location', $this->generateUrl('phone_list_criteria'));
         return $this->handleView($view);

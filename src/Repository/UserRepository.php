@@ -36,15 +36,21 @@ class UserRepository extends ServiceEntityRepository
     }
     */
 
-    /*
-    public function findOneBySomeField($value): ?User
+    /**
+     * @param $value
+     * @return User|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneByClient($client, $id): ?User
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('u.client = :val')
+            ->setParameter('val', $client)
+            ->andWhere('u.id = :val2')
+            ->setParameter('val2', $id)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
+
 }
