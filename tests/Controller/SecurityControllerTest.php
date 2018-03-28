@@ -13,15 +13,11 @@ use App\Tests\BaseTest;
 
 class SecurityControllerTest extends BaseTest
 {
-    const POST_LOGIN = '/api/login';
-    const GET_URI = '/phones';
-
     public function testApiLogin()
     {
-        $username = 'boss';
         $roles = ['ROLE_SUPER_ADMIN'];
         $client = 'bilemo';
-        $response = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => 'boss', 'password' => 'boss']]);
+        $response = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => self::SUPER_ADMIN, 'password' => self::SUPER_ADMIN]]);
         $body = json_decode($response->getBody(), true);
         $decodedToken = $this->getService('lexik_jwt_authentication.encoder')->decode($body['token']);
 
@@ -31,13 +27,13 @@ class SecurityControllerTest extends BaseTest
 
         $this->assertEquals($roles, $decodedToken['roles']);
         $this->assertEquals($client, $decodedToken['client']);
-        $this->assertEquals($username, $decodedToken['username']);
+        $this->assertEquals(self::SUPER_ADMIN, $decodedToken['username']);
         $this->assertEquals(time() + 3600, $decodedToken['exp']);
     }
 
     public function testTokenAuthorizationHeader()
     {
-        $responseLogin = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => 'alphauser1', 'password' => 'alphauser1']]);
+        $responseLogin = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => self::USER, 'password' => self::USER]]);
         $bodyLogin = json_decode($responseLogin->getBody(), true);
         $token = $bodyLogin['token'];
         $responseGet = $this->client->request('GET', self::GET_URI . '/1', [

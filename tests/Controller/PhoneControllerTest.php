@@ -12,11 +12,12 @@ use App\Tests\BaseTest;
 
 class PhoneControllerTest extends BaseTest
 {
-    CONST GET_URI = '/phones';
 
     public function testShowAction()
     {
-        $response = $this->client->request('GET', self::GET_URI . '/1');
+        $response = $this->client->request('GET', self::GET_URI . '/1', [
+            'headers' => $this->generateAuthHeaders(self::USER)
+        ]);
         $body = json_decode($response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
@@ -31,7 +32,9 @@ class PhoneControllerTest extends BaseTest
 
     public function testListAction()
     {
-        $response = $this->client->request('GET', self::GET_URI . '/all');
+        $response = $this->client->request('GET', self::GET_URI . '/all', [
+            'headers' => $this->generateAuthHeaders(self::USER)
+        ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
         $this->assertEquals(['/phones/all'], $response->getHeader('Location'));
@@ -41,7 +44,9 @@ class PhoneControllerTest extends BaseTest
 
     public function testListWithCriteriaAction()
     {
-        $response = $this->client->request('GET', self::GET_URI . '?keyword=Sung&offset=20');
+        $response = $this->client->request('GET', self::GET_URI . '?keyword=Sung&offset=20', [
+            'headers' => $this->generateAuthHeaders(self::ADMIN)
+        ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
         $body = json_decode($response->getBody(), true);

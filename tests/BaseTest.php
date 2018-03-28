@@ -17,6 +17,12 @@ class BaseTest extends KernelTestCase
 
     protected $client;
 
+    const POST_LOGIN = '/api/login';
+    const GET_URI = '/phones';
+    const USER = 'alphauser1';
+    const ADMIN = 'alphaleader';
+    const SUPER_ADMIN = 'boss';
+
     public static function setUpBeforeClass()
     {
         self::$staticClient = new Client([
@@ -50,8 +56,31 @@ class BaseTest extends KernelTestCase
             ->get($id);
     }
 
+    protected function getAuthorizedHeaders($username, $headers = array())
+    {
+        $token = $this->getService('lexik_jwt_authentication.encoder')
+            ->encode([
+                'username' => $username,
+                'exp' => time() + 3600
+            ]);
+
+        $headers['Authorization'] = 'Bearer ' . $token;
+
+        return $headers;
+    }
+
     protected function tearDown()
     {
         // purposefully not calling parent class, which shuts down the kernel
     }
+
+    protected function generateAuthHeaders($userType)
+    {
+        $responseLogin = $this->client->request('POST', self::POST_LOGIN, ['form_params' => ['username' => $userType, 'password' => $userType ]]);
+        $bodyLogin = json_decode($responseLogin->getBody(), true);
+        $token = $bodyLogin['token'];
+        $headers = ['Authorization' => 'Bearer ' . $token];
+        return $headers;
+    }
+
 }
