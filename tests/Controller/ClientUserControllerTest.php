@@ -35,16 +35,43 @@ class ClientUserControllerTest extends BaseTest
 
     public function testListAction()
     {
+        $response = $this->client->request('GET', self::URI_CLIENT . '/all', [
+            'headers' => $this->generateAuthHeaders(self::ADMIN)
+        ]);
 
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertCount(10, json_decode((string) $response->getBody()));
     }
 
     public function testCreateAction()
     {
+        $response = $this->client->request('POST', self::URI_CLIENT, [
+            'headers' => $this->generateAuthHeaders(self::ADMIN),
+            'form_params' => [
+                'username' => 'toto',
+                'email' => 'toto@gmail.com',
+                'plainPassword' => 'toto'
+                ]
+        ]);
+
+        $this->assertEquals(201, $response->getStatusCode());
 
     }
 
     public function testDeleteAction()
     {
+        $response = $this->client->request('DELETE', self::URI_CLIENT . '/22', [
+            'headers' => $this->generateAuthHeaders(self::ADMIN)
+        ]);
 
+        $this->assertEquals(204, $response->getStatusCode());
+    }
+
+    public function testDeleteForeignUserClientAction()
+    {
+        $this->expectException(ClientException::class);
+        $this->client->request('DELETE', self::URI_CLIENT . '/14', [
+            'headers' => $this->generateAuthHeaders(self::ADMIN)
+        ]);
     }
 }

@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Security\Core\User\UserInterface;
-use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -28,12 +28,14 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=35, unique=true)
      * @Expose()
+     * @Assert\NotBlank()
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=190, unique=true)
      * @Expose()
+     * @Assert\NotBlank()
      */
     private $email;
 
@@ -42,6 +44,10 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(max=4096)
+     */
     private $plainPassword;
 
     /**

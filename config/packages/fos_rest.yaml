@@ -20,3 +20,6 @@ fos_rest:
         enabled: true
         rules:
             - { path: '^/', fallback_format: 'json', priorities: [ json ] }
+
+    body_listener:
+        enabled: true
