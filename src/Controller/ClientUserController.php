@@ -22,21 +22,23 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ClientUserController extends FOSRestController
 {
     /**
-     * @Rest\Get(
+     * @param User $user
+     * @param Request $request
+     * @param UserManager $userManager
+     *  * @Rest\Get(
      *     path="/api/clients/{id}",
      *     name="client_show",
      *     requirements={"id"="\d+"}
      * )
+     * @return JsonResponse|Response
      * @Security("is_granted('ROLE_ADMIN')")
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function showAction($id, Request $request, UserManager $userManager)
+    public function showAction(User $user, Request $request, UserManager $userManager)
     {
-        $searchedUser = $userManager->getOneUserByClient($request, $id);
-        if (!$searchedUser) {
-            return new JsonResponse(['message' => 'This user doesn\'t exists']);
+        if ($user->getClient() !== $userManager->getClient($request)) {
+            return new JsonResponse(['message' => 'you\'re not allowed to reach this user.'], Response::HTTP_FORBIDDEN);
         }
-       return $this->generateCustomView($searchedUser, 200, 'client_show', ['id' => $id]);
+       return $this->generateCustomView($user, 200, 'client_show', ['id' => $user->getId()]);
     }
 
     /**
