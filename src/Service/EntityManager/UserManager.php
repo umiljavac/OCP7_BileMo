@@ -108,6 +108,25 @@ class UserManager
         return $this->formHelper->getFormDataErrors($form);
     }
 
+    public function registerAdmin(Request $request, $id)
+    {
+        $client = $this->em->getRepository(Client::class)->find($id);
+        $admin = new User();
+        $form = $this->formHelper->createUserRegistrationForm($admin);
+        $form->submit($request->request->all(), true);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $this->passwordEncoder->encodePassword($admin, $admin->getPlainPassword());
+            $admin->setPassword($password);
+            $admin->setClient($client);
+            $admin->setRoles('ROLE_ADMIN');
+            $client->setLeader($admin);
+            $this->em->persist($admin);
+            $this->em->flush();
+            return $admin;
+        }
+        return $this->formHelper->getFormDataErrors($form);
+    }
+
     public function deleteUser($user)
     {
         $this->em->remove($user);

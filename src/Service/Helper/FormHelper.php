@@ -8,7 +8,9 @@
 
 namespace App\Service\Helper;
 
+use App\Entity\Client;
 use App\Entity\User;
+use App\Form\Type\ClientRegristrationType;
 use App\Form\Type\UserRegistrationType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -29,6 +31,12 @@ class FormHelper
     public function createUserRegistrationForm(User $user)
     {
         $form = $this->createForm(UserRegistrationType::class, $user);
+        return $form;
+    }
+
+    public function createClientRegistrationForm(Client $client)
+    {
+        $form = $this->createForm(ClientRegristrationType::class, $client);
         return $form;
     }
 

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ExclusionPolicy("all")
  */
-class User implements UserInterface
+class User implements AdvancedUserInterface, \Serializable
 {
     /**
      * @ORM\Id()
@@ -27,15 +28,15 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=35, unique=true)
-     * @Expose()
      * @Assert\NotBlank()
+     * @Expose()
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=190, unique=true)
-     * @Expose()
      * @Assert\NotBlank()
+     * @Expose()
      */
     private $email;
 
@@ -64,6 +65,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
+     * @Expose()
      */
     private $isActive;
 
@@ -175,8 +177,36 @@ class User implements UserInterface
         $this->roles = $roles;
     }
 
+    /**
+     * @param bool $active
+     */
+    public function setActive($active): void
+    {
+        $this->isActive = $active;
+    }
+
     public function eraseCredentials()
     {
+    }
+
+    public function isAccountNonExpired()
+    {
+        return true;
+    }
+
+    public function isAccountNonLocked()
+    {
+        return true;
+    }
+
+    public function isCredentialsNonExpired()
+    {
+        return true;
+    }
+
+    public function isEnabled()
+    {
+        return $this->isActive;
     }
 
     /** @see \Serializable::serialize() */
@@ -186,6 +216,7 @@ class User implements UserInterface
             $this->id,
             $this->username,
             $this->password,
+            $this->isActive,
             // see section on salt below
             // $this->salt,
         ));
@@ -201,6 +232,7 @@ class User implements UserInterface
             $this->id,
             $this->username,
             $this->password,
+            $this->isActive,
             // see section on salt below
             // $this->salt
             ) = unserialize($serialized);

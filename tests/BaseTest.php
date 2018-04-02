@@ -19,6 +19,7 @@ abstract class BaseTest extends KernelTestCase
 
     const URI_LOGIN = '/api/login';
     const URI_PHONE = '/api/phones';
+    const URI_USERS = '/api/users';
     const URI_CLIENT = '/api/clients';
     const USER = 'alphauser1';
     const ADMIN = 'alphaleader';

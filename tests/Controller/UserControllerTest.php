@@ -8,10 +8,11 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
 use App\Tests\BaseTest;
 use GuzzleHttp\Exception\ClientException;
 
-class ClientUserControllerTest extends BaseTest
+class UserControllerTest extends BaseTest
 {
     /**
      * an exception is thrown cause user must have a 'ROLE_ADMIN'
@@ -19,14 +20,14 @@ class ClientUserControllerTest extends BaseTest
     public function testFromUserShowAction()
     {
         $this->expectException(ClientException::class);
-        $this->client->request('GET', self::URI_CLIENT . '/5', [
+        $this->client->request('GET', self::URI_USERS . '/5', [
             'headers' => $this->generateAuthHeaders(self::USER)
         ]);
     }
 
     public function testFromAdminShowAction()
     {
-        $response = $this->client->request('GET', self::URI_CLIENT . '/4', [
+        $response = $this->client->request('GET', self::URI_USERS . '/4', [
             'headers' => $this->generateAuthHeaders(self::ADMIN)
         ]);
 
@@ -35,7 +36,7 @@ class ClientUserControllerTest extends BaseTest
 
     public function testListAction()
     {
-        $response = $this->client->request('GET', self::URI_CLIENT . '/all', [
+        $response = $this->client->request('GET', self::URI_USERS, [
             'headers' => $this->generateAuthHeaders(self::ADMIN)
         ]);
 
@@ -45,7 +46,7 @@ class ClientUserControllerTest extends BaseTest
 
     public function testCreateAction()
     {
-        $response = $this->client->request('POST', self::URI_CLIENT, [
+        $response = $this->client->request('POST', self::URI_USERS, [
             'headers' => $this->generateAuthHeaders(self::ADMIN),
             'form_params' => [
                 'username' => 'toto',
@@ -60,7 +61,7 @@ class ClientUserControllerTest extends BaseTest
 
     public function testDeleteAction()
     {
-        $response = $this->client->request('DELETE', self::URI_CLIENT . '/22', [
+        $response = $this->client->request('DELETE', self::URI_USERS . '/22', [
             'headers' => $this->generateAuthHeaders(self::ADMIN)
         ]);
 
@@ -70,8 +71,38 @@ class ClientUserControllerTest extends BaseTest
     public function testDeleteForeignUserClientAction()
     {
         $this->expectException(ClientException::class);
-        $this->client->request('DELETE', self::URI_CLIENT . '/14', [
+        $this->client->request('DELETE', self::URI_USERS . '/14', [
             'headers' => $this->generateAuthHeaders(self::ADMIN)
         ]);
+    }
+
+    public function testDisableUnableUserAccountAction()
+    {
+        $response = $this->client->request('PATCH', self::URI_USERS . '/21', [
+            'headers' => $this->generateAuthHeaders(self::SUPER_ADMIN)
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testDisableUnableSuperAdminAccountAction()
+    {
+         $this->expectException(ClientException::class);
+         $this->client->request('PATCH', self::URI_USERS . '/1', [
+            'headers' => $this->generateAuthHeaders(self::SUPER_ADMIN)
+        ]);
+    }
+
+    public function testCreateAdminAction()
+    {
+        $response = $this->client->request('POST', self::URI_CLIENT . '/4/admin', [
+            'headers' => $this->generateAuthHeaders(self::SUPER_ADMIN),
+            'form_params' => [
+                'username' => 'admin4',
+                'email' => 'admin4@gmail.com',
+                'plainPassword' => 'admin4'
+            ]
+        ]);
+
+        $this->assertEquals(201, $response->getStatusCode());
     }
 }

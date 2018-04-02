@@ -9,7 +9,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Security\JwtTokenAuthenticator;
 use App\Service\EntityManager\UserManager;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -19,15 +18,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ClientUserController extends FOSRestController
+class UserController extends FOSRestController
 {
     /**
      * @param User $user
      * @param Request $request
      * @param UserManager $userManager
      *  * @Rest\Get(
-     *     path="/api/clients/{id}",
-     *     name="client_show",
+     *     path="/api/users/{id}",
+     *     name="user_show",
      *     requirements={"id"="\d+"}
      * )
      * @return JsonResponse|Response
@@ -35,34 +34,37 @@ class ClientUserController extends FOSRestController
      */
     public function showAction(User $user, Request $request, UserManager $userManager)
     {
-        if ($user->getClient() !== $userManager->getClient($request)) {
-            return new JsonResponse(['message' => 'you\'re not allowed to reach this user.'], Response::HTTP_FORBIDDEN);
+        if ($this->getUser()->getRoles() !== ['ROLE_SUPER_ADMIN']) {
+            if ($user->getClient() !== $userManager->getClient($request)) {
+                return new JsonResponse(['message' => 'you\'re not allowed to reach this user.'], Response::HTTP_FORBIDDEN);
+            }
         }
-       return $this->generateCustomView($user, 200, 'client_show', ['id' => $user->getId()]);
+       return $this->generateCustomView($user, 200, 'user_show', ['id' => $user->getId()]);
     }
 
     /**
      * @Rest\Get(
-     *     path="/api/clients/all",
-     *     name="client_list_all"
+     *     path="/api/users",
+     *     name="user_list_all"
      * )
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function listAction(Request $request, UserManager $userManager)
     {
         $clientUsers = $userManager->getAllUsersByClient($request);
-        return $this->generateCustomView($clientUsers, 200, 'client_list_all');
+        return $this->generateCustomView($clientUsers, 200, 'user_list_all');
     }
 
     /**
      * @param Request $request
-     * @param JwtTokenAuthenticator $authenticator
+     * @param UserManager $userManager
      * @Rest\Post(
-     *     path="/api/clients",
-     *     name="client_add_user"
+     *     path="/api/users",
+     *     name="user_add"
      * )
      * @Rest\View(statusCode=Response::HTTP_CREATED)
      * @Security("is_granted('ROLE_ADMIN')")
+     * @return JsonResponse|Response
      */
     public function createAction(Request $request, UserManager $userManager)
     {
@@ -70,14 +72,33 @@ class ClientUserController extends FOSRestController
         if (is_array($data)) {
             return new JsonResponse($data, 400);
         }
-        return $this->generateCustomView($data, 201, 'client_add_user');
+        return $this->generateCustomView($data, 201, 'user_add');
+    }
+
+    /**
+     * @param Request $request
+     * @param UserManager $userManager
+     * @Rest\Post(
+     *     path="/api/clients/{id}/admin",
+     *     name="admin_add",
+     *     requirements={"id"="\d+"}
+     * )
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     */
+    public function createAdminAction(Request $request, UserManager $userManager, $id)
+    {
+        $data = $userManager->registerAdmin($request, $id);
+        if (is_array($data)) {
+            return new JsonResponse($data, 400);
+        }
+        return $this->generateCustomView($data, 201, 'admin_add', ['id' => $id]);
     }
 
     /**
      * @param User $user
      * @Rest\Delete(
-     *     path="/api/clients/{id}",
-     *     name="client_delete_user",
+     *     path="/api/users/{id}",
+     *     name="user_delete",
      *     requirements={"id"="\d+"}
      * )
      * @Rest\View(statusCode=204)
@@ -95,6 +116,31 @@ class ClientUserController extends FOSRestController
         return;
     }
 
+    /**
+     * @Rest\Patch(
+     *     path="/api/users/{id}",
+     *     name="user_switch_active"
+     * )
+     * @param User $user
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     */
+    public function disableEnableAccountAction(User $user)
+    {
+        if ($user === $this->getUser()) {
+            return new JsonResponse(['message' => 'Why do you want to disable your super admin account ? Forget it :)'], Response::HTTP_FORBIDDEN);
+        }
+        $user->isActive()? $user->setActive(false) : $user->setActive(true);
+        $this->getDoctrine()->getManager()->flush();
+        return $this->generateCustomView($user, 200, 'user_switch_active', ['id' => $user->getId()]);
+    }
+
+    /**
+     * @param $data
+     * @param $statusCode
+     * @param $route
+     * @param array $routeOption
+     * @return Response
+     */
     private function generateCustomView($data, $statusCode, $route, $routeOption = [])
     {
         $view = $this->view($data, $statusCode)
