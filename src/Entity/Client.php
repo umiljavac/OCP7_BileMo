@@ -4,9 +4,13 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as Serializer;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ClientRepository")
+ * @ExclusionPolicy("all")
  */
 class Client
 {
@@ -14,22 +18,26 @@ class Client
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Expose()
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Expose()
      */
     private $name;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=true, onDelete="cascade")
+     * @Expose()
      */
     private $leader;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="client", orphanRemoval=true)
+     * @Expose()
      */
     private $users;
 
