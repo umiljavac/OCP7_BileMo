@@ -3,14 +3,38 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PhoneRepository")
  *
  * @ExclusionPolicy("all");
+ *
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "phone_show",
+ *          parameters={"id"="expr(object.getId())"},
+ *          absolute=true
+ *     )
+ * )
+ * @Hateoas\Relation(
+ *     "list-phones-same-mark",
+ *     href = @Hateoas\Route(
+ *          "phone_list_criteria",
+ *          parameters={"keyword"="expr(object.getMark())"},
+ *          absolute=true
+ *     )
+ * )
+ * @Hateoas\Relation(
+ *     "list-all-phones",
+ *     href = @Hateoas\Route(
+ *          "phone_list_all",
+ *          absolute=true
+ *     )
+ * )
  */
 class Phone
 {
