@@ -10,6 +10,7 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Representation\Phones;
+use App\Service\Helper\ViewHelper;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
@@ -29,11 +30,9 @@ class PhoneController extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      * @Security("is_granted('ROLE_USER')")
      */
-    public function showAction(Phone $phone)
+    public function showAction(Phone $phone, ViewHelper $view)
     {
-        $view = $this->view($phone, 200)
-            ->setHeader('Location', $this->generateUrl('phone_show', ['id' => $phone->getId()]));
-        return $this->handleView($view);
+        return $view->generateCustomView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
     }
 
     /**
@@ -44,13 +43,12 @@ class PhoneController extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listAction()
+    public function listAction(ViewHelper $view)
     {
         $repository = $this->getDoctrine()->getRepository('App:Phone');
         $phoneList =  $repository->findAll();
-        $view = $this->view($phoneList, 200)
-            ->setHeader('Location', $this->generateUrl('phone_list_all'));
-        return $this->handleView($view);
+
+        return $view->generateCustomView($phoneList, 200, 'phone_list_all');
     }
 
     /**
@@ -87,7 +85,7 @@ class PhoneController extends FOSRestController
      * @return mixed
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listWithCriteriaAction(ParamFetcherInterface $paramFetcher)
+    public function listWithCriteriaAction(ParamFetcherInterface $paramFetcher, ViewHelper $view)
     {
         $pager = $this->getDoctrine()->getRepository('App:Phone')->search(
             $paramFetcher->get('keyword'),
@@ -96,8 +94,6 @@ class PhoneController extends FOSRestController
             $paramFetcher->get('offset')
         );
 
-        $view = $this->view(new Phones($pager), 200)
-            ->setHeader('Location', $this->generateUrl('phone_list_criteria'));
-        return $this->handleView($view);
+        return $view->generateCustomView(new Phones($pager), 200, 'phone_list_criteria');
     }
 }
