@@ -8,13 +8,11 @@
 
 namespace App\Controller;
 
-
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
-
 
 /**
  * Class SecurityController

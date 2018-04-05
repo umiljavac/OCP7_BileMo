@@ -35,7 +35,10 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     href = @Hateoas\Route(
  *          "user_add",
  *          absolute=true
- *     )
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *          excludeIf = "expr(not is_granted(['ROLE_ADMIN']))"
+ *      )
  * )
  * @Hateoas\Relation(
  *     "delete",
@@ -43,17 +46,9 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *          "user_delete",
  *          parameters={"id"="expr(object.getId())"},
  *          absolute=true
- *     )
- * )
- * @Hateoas\Relation(
- *     "add-admin",
- *     href = @Hateoas\Route(
- *          "admin_add",
- *          parameters={"id"="expr(object.getClient().getId())"},
- *          absolute=true
  *     ),
- *     exclusion = @Hateoas\Exclusion(
- *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *      exclusion = @Hateoas\Exclusion(
+ *          excludeIf = "expr(not is_granted(['ROLE_ADMIN']))"
  *      )
  * )
  * @Hateoas\Relation(

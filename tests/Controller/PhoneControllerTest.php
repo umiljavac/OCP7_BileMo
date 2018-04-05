@@ -26,7 +26,8 @@ class PhoneControllerTest extends BaseTest
             'mark',
             'reference',
             'description',
-            'price'
+            'price',
+            '_links'
         ), array_keys((array) $body));
     }
 
@@ -39,19 +40,19 @@ class PhoneControllerTest extends BaseTest
         $this->assertTrue($response->hasHeader('Location'));
         $this->assertEquals(['/api/phones/all'], $response->getHeader('Location'));
         $this->assertInternalType('array', json_decode((string) $response->getBody()));
-        $this->assertCount(120, json_decode((string) $response->getBody()));
+        $this->assertCount(40, json_decode((string) $response->getBody()));
     }
 
     public function testListWithCriteriaAction()
     {
-        $response = $this->client->request('GET', self::URI_PHONE . '?keyword=Sung&offset=20', [
+        $response = $this->client->request('GET', self::URI_PHONE . '?keyword=Sung&offset=10', [
             'headers' => $this->generateAuthHeaders(self::ADMIN)
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
         $body = json_decode($response->getBody(), true);
         $this->assertInternalType('array', $body);
-        $this->assertEquals(20, count($body['data']));
+        $this->assertEquals(10, count($body['data']));
         for ($i = 0; $i < count($body['data']); $i++) {
             $this->assertEquals('Sungsong', $body['data'][$i]['mark']);
             if ($i < count($body['data']) - 1) {
@@ -59,7 +60,7 @@ class PhoneControllerTest extends BaseTest
              }
         }
         $this->assertEquals(1, $this->count($body['meta']));
-        $this->assertEquals(60, $body['meta']['total_items']);
-        $this->assertEquals(20, $body['meta']['current_items']);
+        $this->assertEquals(10, $body['meta']['total_items']);
+        $this->assertEquals(10, $body['meta']['current_items']);
     }
 }

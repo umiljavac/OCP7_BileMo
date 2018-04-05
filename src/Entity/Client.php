@@ -28,11 +28,22 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     )
  * )
  * @Hateoas\Relation(
- *     "add",
+ *     "add-client",
  *     href = @Hateoas\Route(
  *          "client_add",
  *          absolute=true
  *     )
+ * )
+ * @Hateoas\Relation(
+ *     "add-client-admin",
+ *     href = @Hateoas\Route(
+ *          "admin_add",
+ *          parameters={"id"="expr(object.getId())"},
+ *          absolute=true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *      )
  * )
  */
 class Client

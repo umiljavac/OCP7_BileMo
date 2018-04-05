@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\EntityManager\UserManager;
 
 
 class ClientController extends FOSRestController
@@ -68,6 +69,25 @@ class ClientController extends FOSRestController
             return new JsonResponse($data, 400);
         }
         return $this->generateCustomView($data, 201, 'client_add');
+    }
+
+    /**
+     * @param Request $request
+     * @param UserManager $userManager
+     * @Rest\Post(
+     *     path="/api/clients/{id}/admin",
+     *     name="admin_add",
+     *     requirements={"id"="\d+"}
+     * )
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     */
+    public function createAdminAction(Request $request, UserManager $userManager, $id)
+    {
+        $data = $userManager->registerAdmin($request, $id);
+        if (is_array($data)) {
+            return new JsonResponse($data, 400);
+        }
+        return $this->generateCustomView($data, 201, 'admin_add', ['id' => $id]);
     }
 
     /**
