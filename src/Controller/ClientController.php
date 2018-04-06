@@ -10,8 +10,6 @@ namespace App\Controller;
 
 use App\Entity\Client;
 use App\Service\EntityManager\ClientManager;
-use App\Service\Helper\ViewHelper;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,8 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\EntityManager\UserManager;
 
-
-class ClientController extends FOSRestController
+class ClientController extends BaseController
 {
 
     /**
@@ -34,9 +31,9 @@ class ClientController extends FOSRestController
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      * @return $view
      */
-    public function getClientAction(Client $client, ViewHelper $viewHelper)
+    public function getClientAction(Client $client)
     {
-        return $viewHelper->generateCustomView($client, 200, 'client_show', ['id' => $client->getId()]) ;
+        return $this->generateCustomView($client, 200, 'client_show', ['id' => $client->getId()]) ;
     }
 
     /**
@@ -47,11 +44,11 @@ class ClientController extends FOSRestController
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      * @return $view
      */
-    public function listAllClientsAction(ViewHelper $viewHelper)
+    public function listAllClientsAction()
     {
         $clients = $this->getDoctrine()->getRepository(Client::class)->findAll();
 
-        return $viewHelper->generateCustomView($clients, 200, 'client_show_all');
+        return $this->generateCustomView($clients, 200, 'client_show_all');
     }
 
     /**
@@ -64,13 +61,14 @@ class ClientController extends FOSRestController
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      * @return JsonResponse|Response
      */
-    public function createAction(Request $request, ClientManager $clientManager, ViewHelper $viewHelper)
+    public function createAction(Request $request, ClientManager $clientManager)
     {
         $data = $clientManager->registerClient($request);
         if (is_array($data)) {
-            return new JsonResponse($data, 400);
+           // return new JsonResponse($data, 400);
+            return $this->generateValidationErrorResponse($data, 'client_add');
         }
-        return $viewHelper->generateCustomView($data, 201, 'client_add');
+        return $this->generateCustomView($data, 201, 'client_add');
     }
 
     /**
@@ -83,12 +81,13 @@ class ClientController extends FOSRestController
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function createAdminAction(Request $request, UserManager $userManager, $id, ViewHelper $viewHelper)
+    public function createAdminAction(Request $request, UserManager $userManager, $id)
     {
         $data = $userManager->registerAdmin($request, $id);
         if (is_array($data)) {
-            return new JsonResponse($data, 400);
+           // return new JsonResponse($data, 400);
+            return $this->generateValidationErrorResponse($data, 'admin_add');
         }
-        return $viewHelper->generateCustomView($data, 201, 'admin_add', ['id' => $id]);
+        return $this->generateCustomView($data, 201, 'admin_add', ['id' => $id]);
     }
 }

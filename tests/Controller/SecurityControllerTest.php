@@ -22,6 +22,7 @@ class SecurityControllerTest extends BaseTest
         $decodedToken = $this->getService('lexik_jwt_authentication.encoder')->decode($body['token']);
 
         $this->assertEquals(array(
+            'message',
             'token'
         ), array_keys((array) $body));
 

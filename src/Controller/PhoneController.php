@@ -10,14 +10,12 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Representation\Phones;
-use App\Service\Helper\ViewHelper;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
-class PhoneController extends FOSRestController
+class PhoneController extends BaseController
 {
 
     /**
@@ -30,9 +28,9 @@ class PhoneController extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      * @Security("is_granted('ROLE_USER')")
      */
-    public function showAction(Phone $phone, ViewHelper $view)
+    public function showAction(Phone $phone)
     {
-        return $view->generateCustomView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
+        return $this->generateCustomView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
     }
 
     /**
@@ -43,12 +41,12 @@ class PhoneController extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listAction(ViewHelper $view)
+    public function listAction()
     {
         $repository = $this->getDoctrine()->getRepository('App:Phone');
         $phoneList =  $repository->findAll();
 
-        return $view->generateCustomView($phoneList, 200, 'phone_list_all');
+        return $this->generateCustomView($phoneList, 200, 'phone_list_all');
     }
 
     /**
@@ -85,7 +83,7 @@ class PhoneController extends FOSRestController
      * @return mixed
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listWithCriteriaAction(ParamFetcherInterface $paramFetcher, ViewHelper $view)
+    public function listWithCriteriaAction(ParamFetcherInterface $paramFetcher)
     {
         $pager = $this->getDoctrine()->getRepository('App:Phone')->search(
             $paramFetcher->get('keyword'),
@@ -94,6 +92,6 @@ class PhoneController extends FOSRestController
             $paramFetcher->get('offset')
         );
 
-        return $view->generateCustomView(new Phones($pager), 200, 'phone_list_criteria');
+        return $this->generateCustomView(new Phones($pager), 200, 'phone_list_criteria');
     }
 }

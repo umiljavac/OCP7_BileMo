@@ -56,7 +56,19 @@ class UserControllerTest extends BaseTest
         ]);
 
         $this->assertEquals(201, $response->getStatusCode());
+    }
 
+    public function testValidationErrors()
+    {
+        $this->expectException(ClientException::class);
+        $exception = $this->client->request('POST', self::URI_USERS, [
+            'headers' => $this->generateAuthHeaders(self::ADMIN),
+            'form_params' => [
+                'username' => 'titi',
+                'plainPassword' => 'titi'
+            ]
+        ]);
+        $this->assertEquals('application/problem+json', $exception->getResponse()->getHeader('Content-type'));
     }
 
     public function testDeleteAction()

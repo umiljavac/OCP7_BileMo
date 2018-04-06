@@ -10,8 +10,6 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\EntityManager\UserManager;
-use App\Service\Helper\ViewHelper;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class UserController extends FOSRestController
+class UserController extends BaseController
 {
     /**
      * @param User $user
@@ -33,7 +31,7 @@ class UserController extends FOSRestController
      * @return JsonResponse|Response
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
-    public function showAction(User $user, Request $request, UserManager $userManager, ViewHelper $viewHelper)
+    public function showAction(User $user, Request $request, UserManager $userManager)
     {
         if ($this->getUser()->getRoles() !== ['ROLE_SUPER_ADMIN']) {
             if ($user->getClient() !== $userManager->getClient($request)) {
@@ -43,7 +41,7 @@ class UserController extends FOSRestController
                 );
             }
         }
-       return $viewHelper->generateCustomView($user, 200, 'user_show', ['id' => $user->getId()]);
+       return $this->generateCustomView($user, 200, 'user_show', ['id' => $user->getId()]);
     }
 
     /**
@@ -53,10 +51,10 @@ class UserController extends FOSRestController
      * )
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
-    public function listAction(Request $request, UserManager $userManager, ViewHelper $viewHelper)
+    public function listAction(Request $request, UserManager $userManager)
     {
         $clientUsers = $userManager->getAllUsersByClient($request);
-        return $viewHelper->generateCustomView($clientUsers, 200, 'user_list_all');
+        return $this->generateCustomView($clientUsers, 200, 'user_list_all');
     }
 
     /**
@@ -70,13 +68,14 @@ class UserController extends FOSRestController
      * @Security("is_granted('ROLE_ADMIN')")
      * @return JsonResponse|Response
      */
-    public function createAction(Request $request, UserManager $userManager, ViewHelper $viewHelper)
+    public function createAction(Request $request, UserManager $userManager)
     {
         $data = $userManager->registerUser($request);
         if (is_array($data)) {
-            return new JsonResponse($data, 400);
+           // return new JsonResponse($data, 400);
+            return $this->generateValidationErrorResponse($data, 'user_add');
         }
-        return $viewHelper->generateCustomView($data, 201, 'user_add');
+        return $this->generateCustomView($data, 201, 'user_add');
     }
 
     /**
@@ -112,7 +111,7 @@ class UserController extends FOSRestController
      * @param User $user
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function disableEnableAccountAction(User $user, ViewHelper $viewHelper)
+    public function disableEnableAccountAction(User $user)
     {
         if ($user === $this->getUser()) {
             return new JsonResponse(
@@ -123,7 +122,7 @@ class UserController extends FOSRestController
         $user->isActive()? $user->setActive(false) : $user->setActive(true);
         $this->getDoctrine()->getManager()->flush();
 
-        return $viewHelper->generateCustomView(
+        return $this->generateCustomView(
             $user, 200, 'user_switch_active',
             ['id' => $user->getId()]
         );
