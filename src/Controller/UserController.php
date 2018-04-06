@@ -72,7 +72,6 @@ class UserController extends BaseController
     {
         $data = $userManager->registerUser($request);
         if (is_array($data)) {
-           // return new JsonResponse($data, 400);
             return $this->generateValidationErrorResponse($data, 'user_add');
         }
         return $this->generateCustomView($data, 201, 'user_add');
