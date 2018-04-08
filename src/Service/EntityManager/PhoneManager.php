@@ -29,6 +29,12 @@ class PhoneManager
         $this->formHelper = $formHelper;
     }
 
+    public function listAll()
+    {
+        $phoneList = $this->repository->findAll();
+        return $phoneList;
+    }
+
     /**
      * @param Request $request
      * @return Phone|array

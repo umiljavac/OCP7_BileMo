@@ -44,12 +44,9 @@ class PhoneController extends BaseController
      * @return \Symfony\Component\HttpFoundation\Response
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listAction()
+    public function listAction(PhoneManager $phoneManager)
     {
-        $repository = $this->getDoctrine()->getRepository('App:Phone');
-        $phoneList =  $repository->findAll();
-
-        return $this->generateCustomView($phoneList, 200, 'phone_list_all');
+        return $this->generateCustomView($phoneManager->listAll(), 200, 'phone_list_all');
     }
 
     /**
