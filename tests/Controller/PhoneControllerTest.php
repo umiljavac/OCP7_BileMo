@@ -63,4 +63,51 @@ class PhoneControllerTest extends BaseTest
         $this->assertEquals(10, $body['meta']['total_items']);
         $this->assertEquals(10, $body['meta']['current_items']);
     }
+
+    public function testAddAction()
+    {
+        $response = $this->client->request('POST', self::URI_PHONE, [
+            'headers' => $this->generateAuthHeaders(self::SUPER_ADMIN),
+            'form_params' => [
+                'mark' => 'Wikool',
+                'reference' => 'wik-1',
+                'description' => 'yeah !',
+                'price' => 123
+            ]
+        ]);
+        $this->assertEquals(201, $response->getStatusCode());
+    }
+
+    public function testPatchUpdate()
+    {
+        $response = $this->client->request('PATCH', self::URI_PHONE . '/41', [
+            'headers' => $this->generateAuthHeaders(self::SUPER_ADMIN),
+            'form_params' => [
+                'price' => 145
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testPutUpdate()
+    {
+        $response = $this->client->request('PUT', self::URI_PHONE . '/41', [
+            'headers' => $this->generateAuthHeaders(self::SUPER_ADMIN),
+            'form_params' => [
+                'mark' => 'Wikoolo',
+                'reference' => 'wik-1A',
+                'description' => 'yeah awesome !',
+                'price' => 156
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testDelete()
+    {
+        $response = $this->client->request('DELETE', self::URI_PHONE . '/41', [
+            'headers' => $this->generateAuthHeaders(self::SUPER_ADMIN)
+        ]);
+        $this->assertEquals(204, $response->getStatusCode());
+    }
 }

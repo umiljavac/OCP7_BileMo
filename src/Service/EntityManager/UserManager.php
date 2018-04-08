@@ -8,7 +8,6 @@
 
 namespace App\Service\EntityManager;
 
-
 use App\Entity\Client;
 use App\Entity\User;
 use App\Security\JwtTokenAuthenticator;
@@ -94,6 +93,7 @@ class UserManager
         $user = new User();
         $form = $this->formHelper->createUserRegistrationForm($user);
         $form->submit($request->request->all(), true);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $this->passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
@@ -112,6 +112,7 @@ class UserManager
         $admin = new User();
         $form = $this->formHelper->createUserRegistrationForm($admin);
         $form->submit($request->request->all(), true);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $this->passwordEncoder->encodePassword($admin, $admin->getPlainPassword());
             $admin->setPassword($password);
