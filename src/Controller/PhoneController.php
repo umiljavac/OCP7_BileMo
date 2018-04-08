@@ -10,13 +10,12 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Representation\Phones;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
-class PhoneController extends FOSRestController
+class PhoneController extends BaseController
 {
 
     /**
@@ -31,9 +30,7 @@ class PhoneController extends FOSRestController
      */
     public function showAction(Phone $phone)
     {
-        $view = $this->view($phone, 200)
-            ->setHeader('Location', $this->generateUrl('phone_show', ['id' => $phone->getId()]));
-        return $this->handleView($view);
+        return $this->generateCustomView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
     }
 
     /**
@@ -48,9 +45,8 @@ class PhoneController extends FOSRestController
     {
         $repository = $this->getDoctrine()->getRepository('App:Phone');
         $phoneList =  $repository->findAll();
-        $view = $this->view($phoneList, 200)
-            ->setHeader('Location', $this->generateUrl('phone_list_all'));
-        return $this->handleView($view);
+
+        return $this->generateCustomView($phoneList, 200, 'phone_list_all');
     }
 
     /**
@@ -96,8 +92,6 @@ class PhoneController extends FOSRestController
             $paramFetcher->get('offset')
         );
 
-        $view = $this->view(new Phones($pager), 200)
-            ->setHeader('Location', $this->generateUrl('phone_list_criteria'));
-        return $this->handleView($view);
+        return $this->generateCustomView(new Phones($pager), 200, 'phone_list_criteria');
     }
 }

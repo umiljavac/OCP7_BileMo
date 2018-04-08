@@ -5,12 +5,8 @@ fos_rest:
 #    routing_loader: true
     view:
         view_response_listener:  true
-        formats: { json: true, xml: false, rss: false}
-#    exception:
-#        codes:
-#            App\Exception\MyException: 403
-#        messages:
-#            App\Exception\MyException: Forbidden area.
+        formats: { json: true, xml: false, rss: false }
+
     body_converter:
         enabled: true
         validate: true

@@ -10,7 +10,6 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\EntityManager\UserManager;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class UserController extends FOSRestController
+class UserController extends BaseController
 {
     /**
      * @param User $user
@@ -30,13 +29,16 @@ class UserController extends FOSRestController
      *     requirements={"id"="\d+"}
      * )
      * @return JsonResponse|Response
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
     public function showAction(User $user, Request $request, UserManager $userManager)
     {
         if ($this->getUser()->getRoles() !== ['ROLE_SUPER_ADMIN']) {
             if ($user->getClient() !== $userManager->getClient($request)) {
-                return new JsonResponse(['message' => 'you\'re not allowed to reach this user.'], Response::HTTP_FORBIDDEN);
+                return new JsonResponse(
+                    ['message' => 'you\'re not allowed to reach this user.'],
+                    Response::HTTP_FORBIDDEN
+                );
             }
         }
        return $this->generateCustomView($user, 200, 'user_show', ['id' => $user->getId()]);
@@ -47,7 +49,7 @@ class UserController extends FOSRestController
      *     path="/api/users",
      *     name="user_list_all"
      * )
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
     public function listAction(Request $request, UserManager $userManager)
     {
@@ -70,28 +72,9 @@ class UserController extends FOSRestController
     {
         $data = $userManager->registerUser($request);
         if (is_array($data)) {
-            return new JsonResponse($data, 400);
+            return $this->throwApiProblemValidationException($data);
         }
         return $this->generateCustomView($data, 201, 'user_add');
-    }
-
-    /**
-     * @param Request $request
-     * @param UserManager $userManager
-     * @Rest\Post(
-     *     path="/api/clients/{id}/admin",
-     *     name="admin_add",
-     *     requirements={"id"="\d+"}
-     * )
-     * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     */
-    public function createAdminAction(Request $request, UserManager $userManager, $id)
-    {
-        $data = $userManager->registerAdmin($request, $id);
-        if (is_array($data)) {
-            return new JsonResponse($data, 400);
-        }
-        return $this->generateCustomView($data, 201, 'admin_add', ['id' => $id]);
     }
 
     /**
@@ -110,7 +93,10 @@ class UserController extends FOSRestController
             throw new NotFoundHttpException('This user does\'t exist');
         }
         if ($user->getClient()->getId() !== $userManager->getClientId($request)) {
-            return new JsonResponse(['message' => 'you\'re not allowed to delete this user .'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(
+                ['message' => 'you\'re not allowed to delete this user .'],
+                Response::HTTP_FORBIDDEN
+            );
         }
         $userManager->deleteUser($user);
         return;
@@ -127,24 +113,17 @@ class UserController extends FOSRestController
     public function disableEnableAccountAction(User $user)
     {
         if ($user === $this->getUser()) {
-            return new JsonResponse(['message' => 'Why do you want to disable your super admin account ? Forget it :)'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(
+                ['code' => 403, 'message' => 'Why do you want to disable your super admin account ? Forget it :)'],
+                Response::HTTP_FORBIDDEN
+            );
         }
         $user->isActive()? $user->setActive(false) : $user->setActive(true);
         $this->getDoctrine()->getManager()->flush();
-        return $this->generateCustomView($user, 200, 'user_switch_active', ['id' => $user->getId()]);
-    }
 
-    /**
-     * @param $data
-     * @param $statusCode
-     * @param $route
-     * @param array $routeOption
-     * @return Response
-     */
-    private function generateCustomView($data, $statusCode, $route, $routeOption = [])
-    {
-        $view = $this->view($data, $statusCode)
-            ->setHeader('Location', $this->generateUrl($route, $routeOption));
-        return $this->handleView($view);
+        return $this->generateCustomView(
+            $user, 200, 'user_switch_active',
+            ['id' => $user->getId()]
+        );
     }
 }

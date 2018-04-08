@@ -4,13 +4,47 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ClientRepository")
  * @ExclusionPolicy("all")
+ *
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "client_show",
+ *          parameters={"id"="expr(object.getId())"},
+ *          absolute=true
+ *     )
+ * )
+ * @Hateoas\Relation(
+ *     "clients",
+ *     href = @Hateoas\Route(
+ *          "client_show_all",
+ *          absolute=true
+ *     )
+ * )
+ * @Hateoas\Relation(
+ *     "add-client",
+ *     href = @Hateoas\Route(
+ *          "client_add",
+ *          absolute=true
+ *     )
+ * )
+ * @Hateoas\Relation(
+ *     "add-client-admin",
+ *     href = @Hateoas\Route(
+ *          "admin_add",
+ *          parameters={"id"="expr(object.getId())"},
+ *          absolute=true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *      )
+ * )
  */
 class Client
 {

@@ -103,11 +103,11 @@ class JwtTokenAuthenticator extends AbstractGuardAuthenticator
     public function start(Request $request, AuthenticationException $authException = null)
     {
         return new JsonResponse([
-            'error' => 'authorization required : did you send a valid Authorization header ? Re-login will probably fix that !'
+            'code' => 401,
+            'message' => 'authorization required : did you send a valid Authorization header ? Re-login will probably fix that !'
         ], 401);
     }
 
-    // just added : must confirm
     public function getUserUtils(Request $request)
     {
         $token = $this->getCredentials($request);

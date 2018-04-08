@@ -3,18 +3,65 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 
 /**
  * @ORM\Table("api_users")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ExclusionPolicy("all")
+ *
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "user_show",
+ *          parameters={"id"="expr(object.getId())"},
+ *          absolute=true
+ *     )
+ * )
+ * @Hateoas\Relation(
+ *     "users",
+ *     href = @Hateoas\Route(
+ *          "user_list_all",
+ *          absolute=true
+ *     )
+ * )
+ * @Hateoas\Relation(
+ *     "add",
+ *     href = @Hateoas\Route(
+ *          "user_add",
+ *          absolute=true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *          excludeIf = "expr(not is_granted(['ROLE_ADMIN']))"
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *     "delete",
+ *     href = @Hateoas\Route(
+ *          "user_delete",
+ *          parameters={"id"="expr(object.getId())"},
+ *          absolute=true
+ *     ),
+ *      exclusion = @Hateoas\Exclusion(
+ *          excludeIf = "expr(not is_granted(['ROLE_ADMIN']))"
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *     "disable-enable-account",
+ *     href = @Hateoas\Route(
+ *          "user_switch_active",
+ *          parameters={"id"="expr(object.getId())"},
+ *          absolute=true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *      )
+ * )
  */
 class User implements AdvancedUserInterface, \Serializable
 {

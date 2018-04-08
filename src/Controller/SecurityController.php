@@ -8,19 +8,15 @@
 
 namespace App\Controller;
 
-
-use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
-
 
 /**
  * Class SecurityController
  * @package App\Controller
  */
-class SecurityController extends FOSRestController
+class SecurityController extends BaseController
 {
     /**
      * @Rest\Post(path="/api/login", name="api_login")
@@ -33,8 +29,9 @@ class SecurityController extends FOSRestController
      *     description="Enter your password"
      * )
      * @Rest\View(statusCode=200)
+     * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
      */
-    public function apiLogin($username, $password, UserPasswordEncoderInterface $passwordEncoder)
+    public function apiLoginAction($username, $password, UserPasswordEncoderInterface $passwordEncoder)
     {
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository('App:User')->findOneBy(array('username' => $username));
@@ -42,7 +39,6 @@ class SecurityController extends FOSRestController
         if (!$user) {
             throw $this->createNotFoundException();
         }
-
         if ($passwordEncoder->isPasswordValid($user, $password)) {
             $token = $this->get('lexik_jwt_authentication.encoder')
                 ->encode([
@@ -51,10 +47,12 @@ class SecurityController extends FOSRestController
                     'client' => $user->getClient()->getid(),
                     'exp' => time() + 3600 // 1 hour expiration
                 ]);
-            return new JsonResponse(['token' => $token]);
+            return new JsonResponse([
+                'message' => 'Authentication succes : copy the token value into an Authorization header key.',
+                'token' => $token]);
         }
         else {
-            return new JsonResponse(['message' => 'bad credentials'], Response::HTTP_NOT_FOUND);
+            $this->throwApiProblemCredentialsException();
         }
     }
 }

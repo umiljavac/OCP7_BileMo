@@ -39,7 +39,7 @@ class AppFixtures extends Fixture
         $manager->persist($client);
         $manager->persist($user);
 
-        for ($i = 1; $i < 61; $i++) {
+        for ($i = 1; $i < 11; $i++) {
             $phone = new Phone();
             $phone->setMark('Sungsong');
             $phone->setReference('SG-'.$i);
@@ -48,12 +48,30 @@ class AppFixtures extends Fixture
             $manager->persist($phone);
         }
 
-        for ($e = 1; $e < 61; $e++) {
+        for ($e = 1; $e < 11; $e++) {
             $phone = new Phone();
             $phone->setMark('Noukio');
             $phone->setReference('NK-'.$e);
             $phone->setDescription('The Noukio HH-' . $e . ' has all you could never imagine in a smartphone !');
             $phone->setPrice($e * 4 + rand(100, 500));
+            $manager->persist($phone);
+        }
+
+        for ($a = 1; $a < 11; $a++) {
+            $phone = new Phone();
+            $phone->setMark('Ifon');
+            $phone->setReference('IF-'.$a);
+            $phone->setDescription('The Ifon IF-' . $a . ' will never disappoint you !');
+            $phone->setPrice($a * 4 + rand(100, 500));
+            $manager->persist($phone);
+        }
+
+        for ($b = 1; $b < 11; $b++) {
+            $phone = new Phone();
+            $phone->setMark('Wiwo');
+            $phone->setReference('WI-'.$b);
+            $phone->setDescription('The Wiwo IF-' . $b . ' is one of the best smartphone of the galaxy !');
+            $phone->setPrice($b * 4 + rand(100, 500));
             $manager->persist($phone);
         }
 

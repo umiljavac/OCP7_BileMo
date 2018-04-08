@@ -10,15 +10,14 @@ namespace App\Controller;
 
 use App\Entity\Client;
 use App\Service\EntityManager\ClientManager;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\EntityManager\UserManager;
 
-
-class ClientController extends FOSRestController
+class ClientController extends BaseController
 {
 
     /**
@@ -48,6 +47,7 @@ class ClientController extends FOSRestController
     public function listAllClientsAction()
     {
         $clients = $this->getDoctrine()->getRepository(Client::class)->findAll();
+
         return $this->generateCustomView($clients, 200, 'client_show_all');
     }
 
@@ -65,22 +65,27 @@ class ClientController extends FOSRestController
     {
         $data = $clientManager->registerClient($request);
         if (is_array($data)) {
-            return new JsonResponse($data, 400);
+            return $this->throwApiProblemValidationException($data);
         }
         return $this->generateCustomView($data, 201, 'client_add');
     }
 
     /**
-     * @param $data
-     * @param $statusCode
-     * @param $route
-     * @param array $routeOption
-     * @return Response
+     * @param Request $request
+     * @param UserManager $userManager
+     * @Rest\Post(
+     *     path="/api/clients/{id}/admin",
+     *     name="admin_add",
+     *     requirements={"id"="\d+"}
+     * )
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
-    private function generateCustomView($data, $statusCode, $route, $routeOption = [])
+    public function createAdminAction(Request $request, UserManager $userManager, $id)
     {
-        $view = $this->view($data, $statusCode)
-            ->setHeader('Location', $this->generateUrl($route, $routeOption));
-        return $this->handleView($view);
+        $data = $userManager->registerAdmin($request, $id);
+        if (is_array($data)) {
+            return $this->throwApiProblemValidationException($data);
+        }
+        return $this->generateCustomView($data, 201, 'admin_add', ['id' => $id]);
     }
 }
