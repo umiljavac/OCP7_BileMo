@@ -65,7 +65,7 @@ class ClientController extends BaseController
     {
         $data = $clientManager->registerClient($request);
         if (is_array($data)) {
-            return $this->generateValidationErrorResponse($data, 'client_add');
+            return $this->throwApiProblemValidationException($data);
         }
         return $this->generateCustomView($data, 201, 'client_add');
     }
@@ -84,7 +84,7 @@ class ClientController extends BaseController
     {
         $data = $userManager->registerAdmin($request, $id);
         if (is_array($data)) {
-            return $this->generateValidationErrorResponse($data, 'admin_add');
+            return $this->throwApiProblemValidationException($data);
         }
         return $this->generateCustomView($data, 201, 'admin_add', ['id' => $id]);
     }

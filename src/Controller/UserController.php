@@ -72,7 +72,7 @@ class UserController extends BaseController
     {
         $data = $userManager->registerUser($request);
         if (is_array($data)) {
-            return $this->generateValidationErrorResponse($data, 'user_add');
+            return $this->throwApiProblemValidationException($data);
         }
         return $this->generateCustomView($data, 201, 'user_add');
     }

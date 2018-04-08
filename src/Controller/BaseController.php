@@ -9,6 +9,8 @@
 namespace App\Controller;
 
 
+use App\Exception\ApiProblemException;
+use App\Service\Helper\ApiProblem;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -32,11 +34,18 @@ abstract class BaseController extends FOSRestController
      * @param $data
      * @return JsonResponse
      */
-    protected function generateValidationErrorResponse($data, $route)
+    protected function throwApiProblemValidationException($data)
     {
-            $response = new JsonResponse($data, 400);
-            $response->headers->set('Content-Type', 'application/problem+json');
-            $response->headers->set('Location', $this->generateUrl($route));
-            return $response;
+        $apiProblem = new ApiProblem(400, ApiProblem::TYPE_VALIDATION_ERROR);
+        $apiProblem->set('errors', $data);
+
+        throw new ApiProblemException($apiProblem);
+    }
+
+    // ajout samedi
+    protected function throwApiProblemCredentialsException()
+    {
+        $apiProblem = new ApiProblem(422, ApiProblem::TYPE_BAD_CREDENTIALS);
+        throw new ApiProblemException($apiProblem);
     }
 }

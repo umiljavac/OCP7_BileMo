@@ -9,7 +9,6 @@
 namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
@@ -32,7 +31,7 @@ class SecurityController extends BaseController
      * @Rest\View(statusCode=200)
      * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
      */
-    public function apiLogin($username, $password, UserPasswordEncoderInterface $passwordEncoder)
+    public function apiLoginAction($username, $password, UserPasswordEncoderInterface $passwordEncoder)
     {
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository('App:User')->findOneBy(array('username' => $username));
@@ -53,7 +52,7 @@ class SecurityController extends BaseController
                 'token' => $token]);
         }
         else {
-            return new JsonResponse(['message' => 'bad credentials'], Response::HTTP_NOT_FOUND);
+            $this->throwApiProblemCredentialsException();
         }
     }
 }

@@ -7,13 +7,6 @@ fos_rest:
         view_response_listener:  true
         formats: { json: true, xml: false, rss: false }
 
-    exception:
-#        codes:
-        exception_controller: 'fos_rest.exception.controller:showAction'
-#            App\Exception\MyException: 403
-#        messages:
-#            App\Exception\MyException: Forbidden area.
-
     body_converter:
         enabled: true
         validate: true

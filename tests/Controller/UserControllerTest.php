@@ -69,6 +69,8 @@ class UserControllerTest extends BaseTest
             ]
         ]);
         $this->assertEquals('application/problem+json', $exception->getResponse()->getHeader('Content-type'));
+        $this->assertEquals(400, $exception->getResponse()->getBody('status'));
+        $this->assertEquals('validation_error', $exception->getResponse()->getBody('type'));
     }
 
     public function testDeleteAction()
@@ -116,5 +118,17 @@ class UserControllerTest extends BaseTest
         ]);
 
         $this->assertEquals(201, $response->getStatusCode());
+    }
+
+    public function test404Exception()
+    {
+        $this->expectException(ClientException::class);
+        $exception = $this->client->request('GET', self::URI_USERS . '/123', [
+            'headers' => $this->generateAuthHeaders(self::ADMIN)
+        ]);
+
+        $this->assertEquals('application/problem+json', $exception->getResponse()->getHeader('Content-type'));
+        $this->assertEquals(404, $exception->getResponse()->getBody('status'));
+        $this->assertEquals('about:blank', $exception->getResponse()->getBody('type'));
     }
 }
