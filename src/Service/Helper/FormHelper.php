@@ -9,8 +9,10 @@
 namespace App\Service\Helper;
 
 use App\Entity\Client;
+use App\Entity\Phone;
 use App\Entity\User;
 use App\Form\Type\ClientRegristrationType;
+use App\Form\Type\PhoneType;
 use App\Form\Type\UserRegistrationType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -22,6 +24,16 @@ class FormHelper
     public function __construct(FormFactoryInterface $formFactory)
     {
         $this->formFactory = $formFactory;
+    }
+
+    /**
+     * @param Phone $phone
+     * @return FormInterface
+     */
+    public function createPhoneForm(Phone $phone)
+    {
+        $form = $this->createForm(PhoneType::class, $phone);
+        return $form;
     }
 
     /**
