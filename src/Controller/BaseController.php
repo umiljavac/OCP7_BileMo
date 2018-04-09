@@ -25,8 +25,10 @@ abstract class BaseController extends FOSRestController
      */
     protected function generateCustomView($data, $statusCode, $route, $routeOption = [])
     {
-        $view = $this->view($data, $statusCode)
-            ->setHeader('Location', $this->generateUrl($route, $routeOption));
+        $view = $this->view($data, $statusCode, array(
+            'Content-Type' => 'application/hal+json',
+            'Location' => $this->generateUrl($route, $routeOption)
+        ));
         return $this->handleView($view);
     }
 
