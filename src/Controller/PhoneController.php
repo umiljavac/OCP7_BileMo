@@ -9,14 +9,14 @@
 namespace App\Controller;
 
 use App\Entity\Phone;
-use App\Representation\Phones;
 use App\Service\EntityManager\PhoneManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Request\ParamFetcherInterface;
+use Hateoas\Configuration\Route;
+use Hateoas\Representation\CollectionRepresentation;
+use Hateoas\Representation\Factory\PagerfantaFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
-
 
 class PhoneController extends BaseController
 {
@@ -30,30 +30,19 @@ class PhoneController extends BaseController
      * )
      * @return \Symfony\Component\HttpFoundation\Response
      * @Security("is_granted('ROLE_USER')")
+     * @Rest\View(
+     *     serializerGroups = {"detail"}
+     * )
      */
     public function showAction(Phone $phone)
     {
-        return $this->generateCustomView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
+        return $this->generateApiView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
     }
 
     /**
-     * @Rest\Get(
-     *     path="/api/phones/all",
-     *     name="phone_list_all",
-     * )
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @Security("is_granted('ROLE_USER')")
-     */
-    public function listAction(PhoneManager $phoneManager)
-    {
-        return $this->generateCustomView($phoneManager->listAll(), 200, 'phone_list_all');
-    }
-
-    /**
-     * @param ParamFetcherInterface $paramFetcher
      * @Rest\Get(
      *     path="/api/phones",
-     *     name="phone_list_criteria"
+     *     name="phone_list"
      * )
      * @Rest\QueryParam(
      *     name="keyword",
@@ -70,8 +59,8 @@ class PhoneController extends BaseController
      * @Rest\QueryParam(
      *     name="limit",
      *     requirements={"\d+"},
-     *     default="20",
-     *     description="The pagination offset."
+     *     default="5",
+     *     description="The pagination limit."
      * )
      * @Rest\QueryParam(
      *     name="offset",
@@ -79,20 +68,31 @@ class PhoneController extends BaseController
      *     default="0",
      *     description="The pagination offset."
      * )
-     * @Rest\View()
+     * @Rest\QueryParam(
+     *     name="page",
+     *     requirements={"\d+"},
+     *     default="1",
+     *     description="The current page."
+     * )
+     * @Rest\View(serializerGroups = {"detail, list"})
      * @return mixed
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listWithCriteriaAction(ParamFetcherInterface $paramFetcher)
+    public function listAction(PhoneManager $phoneManager)
     {
-        $pager = $this->getDoctrine()->getRepository('App:Phone')->search(
-            $paramFetcher->get('keyword'),
-            $paramFetcher->get('order'),
-            $paramFetcher->get('limit'),
-            $paramFetcher->get('offset')
-        );
+        $pagerPackage = $phoneManager->getPager();
 
-        return $this->generateCustomView(new Phones($pager), 200, 'phone_list_criteria');
+        $pagerfantaFactory = new PagerfantaFactory();
+
+        $paginatedCollection = $pagerfantaFactory->createRepresentation(
+            $pagerPackage['pager'],
+            new Route('phone_list', array('keyword' => $pagerPackage['keyword'])),
+            new CollectionRepresentation($pagerPackage['pager']->getCurrentPageResults(),
+            'phones',
+            'phones'
+            )
+        );
+        return $this->generateCustomView($paginatedCollection, 200, 'phone_list');
     }
 
     /**
@@ -101,6 +101,7 @@ class PhoneController extends BaseController
      *     name="phone_add"
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     * @Rest\View()
      */
     public function createAction(Request $request, PhoneManager $phoneManager)
     {
@@ -109,7 +110,7 @@ class PhoneController extends BaseController
             $this->throwApiProblemValidationException($data);
         }
 
-        return $this->generateCustomView($data, 201, 'phone_add');
+        return $this->generateApiView($data, 201, 'phone_add');
     }
 
     /**
@@ -119,6 +120,7 @@ class PhoneController extends BaseController
      *     requirements={"id"="\d+"}
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     * @Rest\View()
      */
     public function patchAction(Phone $phone, Request $request, PhoneManager $phoneManager)
     {
@@ -130,7 +132,7 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
-        return $this->generateCustomView($data,200, 'phone_update_patch', ['id' => $phone->getId()]);
+        return $this->generateApiView($data, 200, 'phone_update_patch', ['id' => $phone->getId()]);
     }
 
     /**
@@ -151,7 +153,7 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
-        return $this->generateCustomView($data,200, 'phone_update_put', ['id' => $phone->getId()]);
+        return $this->generateApiView($data,200, 'phone_update_put', ['id' => $phone->getId()]);
     }
 
     /**
@@ -170,5 +172,25 @@ class PhoneController extends BaseController
         }
 
         $phoneManager->deletePhone($phone);
+    }
+
+    /**
+     * * @Rest\Get(
+     *     path="/api/phones/marks/{mark}",
+     *     name="phone_list_mark",
+     *     requirements={"mark"="\w+"}
+     * )
+     * @Rest\View(
+     *     serializerGroups = {"mark"}
+     * )
+     * @param $mark
+     */
+    public function listPhonesByMark($mark, PhoneManager $phoneManager)
+    {
+        return $this->generateApiView(
+            $phoneManager->listPhonesByMark($mark),
+            200,
+            'phone_list_mark', ['mark' => $mark]
+            );
     }
 }

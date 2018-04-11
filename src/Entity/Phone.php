@@ -3,15 +3,12 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 use Hateoas\Configuration\Annotation as Hateoas;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PhoneRepository")
- *
- * @ExclusionPolicy("all");
  *
  * @Hateoas\Relation(
  *     "self",
@@ -19,31 +16,30 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "phone_show",
  *          parameters={"id"="expr(object.getId())"},
  *          absolute=true
- *     )
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *          groups={"list", "detail", "mark"}
+ *      )
  * )
  * @Hateoas\Relation(
  *     "list-phones-same-mark",
  *     href = @Hateoas\Route(
- *          "phone_list_criteria",
- *          parameters={"keyword"="expr(object.getMark())"},
+ *          "phone_list_mark",
+ *          parameters={"mark"="expr(object.getMark())"},
  *          absolute=true
- *     )
+ *     ),
+ *      exclusion = @Hateoas\Exclusion(
+ *          groups={"list", "detail"}
+ *      )
  * )
  * @Hateoas\Relation(
  *     "list-all-phones",
  *     href = @Hateoas\Route(
- *          "phone_list_all",
- *          absolute=true
- *     )
- * )
- * @Hateoas\Relation(
- *     "phone-add",
- *     href = @Hateoas\Route(
- *          "phone_add",
+ *          "phone_list",
  *          absolute=true
  *     ),
  *     exclusion = @Hateoas\Exclusion(
- *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *          groups={"list", "detail"}
  *      )
  * )
  * @Hateoas\Relation(
@@ -54,7 +50,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          absolute=true
  *     ),
  *     exclusion = @Hateoas\Exclusion(
- *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))",
+ *          groups={"list", "detail"}
  *      )
  * )
  * @Hateoas\Relation(
@@ -65,7 +62,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          absolute=true
  *     ),
  *     exclusion = @Hateoas\Exclusion(
- *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))",
+ *           groups= {"list", "detail"}
  *      )
  * )
  * @Hateoas\Relation(
@@ -76,7 +74,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          absolute=true
  *     ),
  *     exclusion = @Hateoas\Exclusion(
- *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))"
+ *          excludeIf = "expr(not is_granted(['ROLE_SUPER_ADMIN']))",
+ *           groups= {"list", "detail"}
  *      )
  * )
  */
@@ -86,35 +85,35 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Expose()
+     * @Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=100)
      * @Assert\NotBlank()
-     * @Expose()
+     * @Groups({"list", "detail"})
      */
     private $mark;
 
     /**
      * @ORM\Column(type="string", length=100, unique=true)
      * @Assert\NotBlank()
-     * @Expose()
+     * @Groups({"list", "detail", "mark"})
      */
     private $reference;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
-     * @Expose()
+     * @Groups({"detail"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="float", scale=2)
      * @Assert\NotBlank()
-     * @Expose()
+     * @Groups({"list", "detail", "mark"})
      */
     private $price;
 

@@ -33,35 +33,50 @@ class PhoneControllerTest extends BaseTest
 
     public function testListAction()
     {
-        $response = $this->client->request('GET', self::URI_PHONE . '/all', [
+        $response = $this->client->request('GET', self::URI_PHONE, [
             'headers' => $this->generateAuthHeaders(self::USER)
         ]);
+        $body = json_decode($response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
-        $this->assertEquals(['/api/phones/all'], $response->getHeader('Location'));
-        $this->assertInternalType('array', json_decode((string) $response->getBody()));
-        $this->assertCount(40, json_decode((string) $response->getBody()));
+        $this->assertEquals(['/api/phones'], $response->getHeader('Location'));
+        $this->assertInternalType('array', $body['_embedded']['phones']);
+        $this->assertEquals(6, count($body));
     }
 
-    public function testListWithCriteriaAction()
+    public function testListPaginationAction()
     {
-        $response = $this->client->request('GET', self::URI_PHONE . '?keyword=Sung&offset=10', [
+        $response = $this->client->request('GET', self::URI_PHONE . '?page=2&limit=5', [
             'headers' => $this->generateAuthHeaders(self::ADMIN)
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
         $body = json_decode($response->getBody(), true);
-        $this->assertInternalType('array', $body);
-        $this->assertEquals(10, count($body['data']));
-        for ($i = 0; $i < count($body['data']); $i++) {
-            $this->assertEquals('Sungsong', $body['data'][$i]['mark']);
-            if ($i < count($body['data']) - 1) {
-                $this->assertTrue($body['data'][$i]['price'] <= $body['data'][$i + 1]['price']);
-             }
+        $this->assertEquals(2, $body['page']);
+        $this->assertEquals(8, $body['pages']);
+        $this->assertEquals(5, $body['limit']);
+        $this->assertEquals(40, $body['total']);
+        $this->assertEquals(5, count($body['_links']));
+        $this->assertEquals(1, count($body['_embedded']));
+        $this->assertEquals(5, count($body['_embedded']['phones']));
+
+        for ($i = 0; $i < count($body['_embedded']['phones']); $i++) {
+            if ($i < count($body['_embedded']['phones']) - 1) {
+                $this->assertTrue($body['_embedded']['phones'][$i]['price'] <= $body['_embedded']['phones'][$i + 1]['price']);
+            }
         }
-        $this->assertEquals(1, $this->count($body['meta']));
-        $this->assertEquals(10, $body['meta']['total_items']);
-        $this->assertEquals(10, $body['meta']['current_items']);
+    }
+
+    public function testMarksAction()
+    {
+        $response = $this->client->request('GET', self::URI_PHONE . '/marks/Sungsong', [
+            'headers' => $this->generateAuthHeaders(self::ADMIN)
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(['application/hal+json'], $response->getHeader('Content-Type'));
+        $body = json_decode($response->getBody(), true);
+        $this->assertInternalType('array', $body);
+        $this->assertEquals(10, count($body));
     }
 
     public function testAddAction()
