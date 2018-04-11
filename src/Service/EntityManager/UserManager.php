@@ -68,7 +68,7 @@ class UserManager
     public function getPager(Request $request)
     {
         $pager = $this->repository->search(
-            $clientId = $this->getClientId($request),
+            $this->getClientId($request),
             $this->paramFetcher->get('keyword'),
             $this->paramFetcher->get('order'),
             $this->paramFetcher->get('limit'),

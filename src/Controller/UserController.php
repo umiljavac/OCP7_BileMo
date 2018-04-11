@@ -11,6 +11,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\EntityManager\UserManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Hateoas\Configuration\Annotation\Exclusion;
 use Hateoas\Configuration\Route;
 use Hateoas\Representation\CollectionRepresentation;
 use Hateoas\Representation\Factory\PagerfantaFactory;
