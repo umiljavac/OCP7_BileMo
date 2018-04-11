@@ -12,11 +12,27 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository
+class UserRepository extends AbstractRepository
 {
-    public function __construct(RegistryInterface $registry)
+
+    public function search($client, $term, $order = 'asc', $limit, $offset, $page)
     {
-        parent::__construct($registry, User::class);
+        $qb = $this
+            ->createQueryBuilder('u')
+            ->andWhere('u.client = :val')
+            ->setParameter('val', $client)
+            ->select('u')
+            ->orderBy('u.id', $order)
+        ;
+
+        if ($term) {
+            $qb
+                ->where('u.roles LIKE ?1')
+                ->setParameter(1, '%'.$term.'%')
+            ;
+        }
+
+        return $this->paginate($qb, $limit, $offset, $page);
     }
 
     /**

@@ -11,6 +11,9 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\EntityManager\UserManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Hateoas\Configuration\Route;
+use Hateoas\Representation\CollectionRepresentation;
+use Hateoas\Representation\Factory\PagerfantaFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,14 +50,55 @@ class UserController extends BaseController
     /**
      * @Rest\Get(
      *     path="/api/users",
-     *     name="user_list_all"
+     *     name="user_list"
+     * )
+     * @Rest\QueryParam(
+     *     name="keyword",
+     *     requirements={"[a-zA-Z0-9]"},
+     *     nullable=true,
+     *     description="The keyword to search for."
+     * )
+     * @Rest\QueryParam(
+     *     name="order",
+     *     requirements={"asc|desc"},
+     *     nullable=true,
+     *     description="Sort order (asc or desc)."
+     * )
+     * @Rest\QueryParam(
+     *     name="limit",
+     *     requirements={"\d+"},
+     *     default="5",
+     *     description="The pagination limit."
+     * )
+     * @Rest\QueryParam(
+     *     name="offset",
+     *     requirements={"\d+"},
+     *     default="0",
+     *     description="The pagination offset."
+     * )
+     * @Rest\QueryParam(
+     *     name="page",
+     *     requirements={"\d+"},
+     *     default="1",
+     *     description="The current page."
      * )
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
     public function listAction(Request $request, UserManager $userManager)
     {
-        $clientUsers = $userManager->getAllUsersByClient($request);
-        return $this->generateCustomView($clientUsers, 200, 'user_list_all');
+        $pagerPackage = $userManager->getPager($request);
+
+        $pagerfantaFactory = new PagerfantaFactory();
+
+        $paginatedCollection = $pagerfantaFactory->createRepresentation(
+            $pagerPackage['pager'],
+            new Route('user_list', array('keyword' => $pagerPackage['keyword'])),
+            new CollectionRepresentation($pagerPackage['pager']->getCurrentPageResults(),
+                'users',
+                'users'
+            )
+        );
+        return $this->generateCustomView($paginatedCollection, 200, 'user_list');
     }
 
     /**
