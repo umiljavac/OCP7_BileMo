@@ -11,6 +11,7 @@ namespace App\Service\EntityManager;
 use App\Entity\Phone;
 use App\Service\Helper\FormHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class PhoneManager
@@ -18,21 +19,37 @@ class PhoneManager
     private $em;
     private $repository;
     private $formHelper;
+    private $paramFetcher;
 
     public function __construct(
         EntityManagerInterface $em,
-        FormHelper $formHelper
+        FormHelper $formHelper,
+        ParamFetcherInterface $paramFetcher
     )
     {
         $this->em = $em;
         $this->repository = $em->getRepository(Phone::class);
         $this->formHelper = $formHelper;
+        $this->paramFetcher = $paramFetcher;
     }
 
-    public function listAll()
+    public function getPager()
     {
-        $phoneList = $this->repository->findAll();
-        return $phoneList;
+        $pager = $this->repository->search(
+            $this->paramFetcher->get('keyword'),
+            $this->paramFetcher->get('order'),
+            $this->paramFetcher->get('limit'),
+            $this->paramFetcher->get('offset'),
+            $this->paramFetcher->get('page')
+        );
+        $pagerPackage['pager'] = $pager;
+        $pagerPackage['keyword'] = $this->paramFetcher->get('keyword');
+        return $pagerPackage;
+    }
+
+    public function listPhonesByMark($mark)
+    {
+        return $this->repository->listPhonesByMark($mark);
     }
 
     /**

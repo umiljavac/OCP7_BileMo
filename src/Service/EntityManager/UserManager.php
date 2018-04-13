@@ -13,6 +13,7 @@ use App\Entity\User;
 use App\Security\JwtTokenAuthenticator;
 use App\Service\Helper\FormHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -23,12 +24,14 @@ class UserManager
     private $passwordEncoder;
     private $authenticator;
     private $formHelper;
+    private $paramFetcher;
 
     public function __construct(
         UserPasswordEncoderInterface $passwordEncoder,
         EntityManagerInterface $em,
         JwtTokenAuthenticator $authenticator,
-        FormHelper $formHelper
+        FormHelper $formHelper,
+        ParamFetcherInterface $paramFetcher
     )
     {
         $this->em = $em;
@@ -36,6 +39,7 @@ class UserManager
         $this->passwordEncoder = $passwordEncoder;
         $this->authenticator = $authenticator;
         $this->formHelper = $formHelper;
+        $this->paramFetcher = $paramFetcher;
     }
 
     /**
@@ -58,8 +62,22 @@ class UserManager
     public function getAllUsersByClient(Request $request)
     {
         $clientId = $this->getClientId($request);
-        $clientUsers = $this->repository->findByClient($clientId);
-        return $clientUsers;
+        return $this->getPager($clientId);
+    }
+
+    public function getPager(Request $request)
+    {
+        $pager = $this->repository->search(
+            $this->getClientId($request),
+            $this->paramFetcher->get('keyword'),
+            $this->paramFetcher->get('order'),
+            $this->paramFetcher->get('limit'),
+            $this->paramFetcher->get('offset'),
+            $this->paramFetcher->get('page')
+        );
+        $pagerPackage['pager'] = $pager;
+        $pagerPackage['keyword'] = $this->paramFetcher->get('keyword');
+        return $pagerPackage;
     }
 
     /**

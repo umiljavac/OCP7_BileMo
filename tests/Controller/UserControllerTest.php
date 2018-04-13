@@ -39,9 +39,28 @@ class UserControllerTest extends BaseTest
         $response = $this->client->request('GET', self::URI_USERS, [
             'headers' => $this->generateAuthHeaders(self::ADMIN)
         ]);
-
+        $body = json_decode($response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertCount(10, json_decode((string) $response->getBody()));
+        $this->assertEquals(['/api/users'], $response->getHeader('Location'));
+        $this->assertInternalType('array', $body['_embedded']['users']);
+        $this->assertEquals(6, count($body));
+    }
+
+    public function testListPaginationAction()
+    {
+        $response = $this->client->request('GET', self::URI_USERS . '?page=2&limit=5', [
+            'headers' => $this->generateAuthHeaders(self::ADMIN)
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->hasHeader('Location'));
+        $body = json_decode($response->getBody(), true);
+        $this->assertEquals(2, $body['page']);
+        $this->assertEquals(2, $body['pages']);
+        $this->assertEquals(5, $body['limit']);
+        $this->assertEquals(10, $body['total']);
+        $this->assertEquals(4, count($body['_links']));
+        $this->assertEquals(1, count($body['_embedded']));
+        $this->assertEquals(5, count($body['_embedded']['users']));
     }
 
     public function testCreateAction()

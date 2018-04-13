@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ClientRepository")
@@ -23,7 +24,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * @Hateoas\Relation(
  *     "clients",
  *     href = @Hateoas\Route(
- *          "client_show_all",
+ *          "client_list",
  *          absolute=true
  *     )
  * )
@@ -58,6 +59,7 @@ class Client
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank()
      * @Expose()
      */
     private $name;

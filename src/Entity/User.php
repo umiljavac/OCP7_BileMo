@@ -26,7 +26,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * @Hateoas\Relation(
  *     "users",
  *     href = @Hateoas\Route(
- *          "user_list_all",
+ *          "user_list",
  *          absolute=true
  *     )
  * )
