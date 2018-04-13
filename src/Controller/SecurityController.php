@@ -11,6 +11,7 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Swagger\Annotations as SWG;
 
 /**
  * Class SecurityController
@@ -19,6 +20,15 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 class SecurityController extends BaseController
 {
     /**
+     *
+     * Connection to the API
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Return the Bearer Token. Put it on an Authorization header."
+     * )
+     * @SWG\Tag(name="Login")
+     *
      * @Rest\Post(path="/api/login", name="api_login")
      * @Rest\RequestParam(
      *     name = "username",
