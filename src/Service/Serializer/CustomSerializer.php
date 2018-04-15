@@ -77,6 +77,7 @@ class CustomSerializer extends SerializerBuilder implements JsonSerializerInterf
         $serializedEmbeddeds = array();
         $multiple = array();
 
+        /*
          for ($i = 0; $i < count($embeddeds); $i++) {
              $items = $embeddeds[$i]->getData();
              if ($items[$i] instanceof Phone) {
@@ -86,8 +87,16 @@ class CustomSerializer extends SerializerBuilder implements JsonSerializerInterf
                  }
              }
          }
-
+        */
         foreach ($embeddeds as $embedded) {
+            // ajout
+            $items = $embedded->getData();
+            if ($items[0] instanceof Phone) {
+                foreach ($items as $item) {
+                    $item->setDescription(self::PHONE_DESC);
+                }
+            }
+            // fin
             $context->pushPropertyMetadata($embedded->getMetadata());
 
             if (!isset($serializedEmbeddeds[$embedded->getRel()])) {
