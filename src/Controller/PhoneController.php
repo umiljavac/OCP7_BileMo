@@ -14,13 +14,11 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Hateoas\Configuration\Route;
 use Hateoas\Representation\CollectionRepresentation;
 use Hateoas\Representation\Factory\PagerfantaFactory;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security as SEC;
-
 
 class PhoneController extends BaseController
 {
@@ -59,17 +57,16 @@ class PhoneController extends BaseController
      *     name="phone_show",
      *     requirements={"id"="\d+"}
      * )
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
      * @Security("is_granted('ROLE_USER')")
      * @Rest\View(
      *     serializerGroups = {"detail"}
      * )
      * @param Phone $phone
+     * @return \FOS\RestBundle\View\View
      */
     public function showAction(Phone $phone)
     {
-        return $this->generateApiView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
+        return $this->generateApiResponse($phone, 200, 'phone_show', ['id' => $phone->getId()]);
     }
 
 
@@ -129,9 +126,8 @@ class PhoneController extends BaseController
      *     default="1",
      *     description="The current page."
      * )
-     * @Rest\View(serializerGroups = {"detail, list"})
-     * @return mixed
-     * @Security("is_granted('ROLE_USER')")
+     * @param PhoneManager $phoneManager
+     * @return mixed* @Security("is_granted('ROLE_USER')")
      */
     public function listAction(PhoneManager $phoneManager)
     {
@@ -147,7 +143,7 @@ class PhoneController extends BaseController
             'phones'
             )
         );
-        return $this->generateCustomView($paginatedCollection, 200, 'phone_list');
+        return $this->generateApiResponse($paginatedCollection, 200, 'phone_list');
     }
 
     /**
@@ -193,7 +189,7 @@ class PhoneController extends BaseController
      */
     public function listPhonesByMark($mark, PhoneManager $phoneManager)
     {
-        return $this->generateApiView(
+        return $this->generateApiResponse(
             $phoneManager->listPhonesByMark($mark),
             200,
             'phone_list_mark', ['mark' => $mark]
@@ -261,6 +257,9 @@ class PhoneController extends BaseController
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      * @Rest\View()
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     * @return \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, PhoneManager $phoneManager)
     {
@@ -269,7 +268,7 @@ class PhoneController extends BaseController
             $this->throwApiProblemValidationException($data);
         }
 
-        return $this->generateApiView($data, 201, 'phone_add');
+        return $this->generateApiResponse($data, 201, 'phone_add');
     }
 
     /**
@@ -316,6 +315,10 @@ class PhoneController extends BaseController
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      * @Rest\View()
+     * @param Phone $phone
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     * @return \FOS\RestBundle\View\View
      */
     public function patchAction(Phone $phone, Request $request, PhoneManager $phoneManager)
     {
@@ -327,7 +330,7 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
-        return $this->generateApiView($data, 200, 'phone_update_patch', ['id' => $phone->getId()]);
+        return $this->generateApiResponse($data, 200, 'phone_update_patch', ['id' => $phone->getId()]);
     }
 
     /**
@@ -373,6 +376,10 @@ class PhoneController extends BaseController
      *     requirements={"id"="\d+"}
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     * @param Phone $phone
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     * @return \FOS\RestBundle\View\View
      */
     public function putAction(Phone $phone, Request $request, PhoneManager $phoneManager)
     {
@@ -384,7 +391,7 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
-        return $this->generateApiView($data,200, 'phone_update_put', ['id' => $phone->getId()]);
+        return $this->generateApiResponse($data,200, 'phone_update_put', ['id' => $phone->getId()]);
     }
 
     /**
@@ -426,6 +433,8 @@ class PhoneController extends BaseController
      * )
      * @Rest\View(statusCode=204)
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     * @param Phone $phone
+     * @param PhoneManager $phoneManager
      */
     public function deleteAction(Phone $phone, PhoneManager $phoneManager)
     {

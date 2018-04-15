@@ -12,9 +12,7 @@ use App\Entity\Client;
 use App\Service\EntityManager\ClientManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use App\Service\EntityManager\UserManager;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -67,7 +65,7 @@ class ClientController extends BaseController
      */
     public function showAction(Client $client)
     {
-        return $this->generateApiView($client, 200, 'client_show', ['id' => $client->getId()]) ;
+        return $this->generateApiResponse($client, 200, 'client_show', ['id' => $client->getId()]) ;
     }
 
     /**
@@ -101,13 +99,13 @@ class ClientController extends BaseController
      *     name="client_list"
      *     )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @return Response $view
+     * @return \FOS\RestBundle\View\View
      */
     public function listAction()
     {
         $clients = $this->getDoctrine()->getRepository(Client::class)->findAll();
 
-        return $this->generateCustomView($clients, 200, 'client_list');
+        return $this->generateApiResponse($clients, 200, 'client_list');
     }
 
     /**
@@ -154,7 +152,7 @@ class ClientController extends BaseController
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      * @param Request $request
      * @param ClientManager $clientManager
-     * @return JsonResponse|Response
+     * @return \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, ClientManager $clientManager)
     {
@@ -162,7 +160,7 @@ class ClientController extends BaseController
         if (is_array($data)) {
             return $this->throwApiProblemValidationException($data);
         }
-        return $this->generateApiView($data, 201, 'client_add');
+        return $this->generateApiResponse($data, 201, 'client_add');
     }
 
     /**
@@ -229,7 +227,7 @@ class ClientController extends BaseController
      * @param Request $request
      * @param UserManager $userManager
      * @param $id
-     * @return JsonResponse|Response
+     * @return \FOS\RestBundle\View\View
      */
     public function createAdminAction(Request $request, UserManager $userManager, $id)
     {
@@ -237,6 +235,6 @@ class ClientController extends BaseController
         if (is_array($data)) {
             return $this->throwApiProblemValidationException($data);
         }
-        return $this->generateApiView($data, 201, 'admin_add', ['id' => $id]);
+        return $this->generateApiResponse($data, 201, 'admin_add', ['id' => $id]);
     }
 }

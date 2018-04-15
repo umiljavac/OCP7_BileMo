@@ -36,9 +36,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "list-all-phones",
  *     href = @Hateoas\Route(
  *          "phone_list",
- *          absolute=true
+ *          absolute=true,
  *     ),
- *     exclusion = @Hateoas\Exclusion(
+ *      exclusion = @Hateoas\Exclusion(
  *          groups={"list", "detail"}
  *      )
  * )

@@ -11,7 +11,6 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\EntityManager\UserManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Hateoas\Configuration\Annotation\Exclusion;
 use Hateoas\Configuration\Route;
 use Hateoas\Representation\CollectionRepresentation;
 use Hateoas\Representation\Factory\PagerfantaFactory;
@@ -57,10 +56,8 @@ class UserController extends BaseController
      * @param User $user
      * @param Request $request
      * @param UserManager $userManager
-     *
-     * @return JsonResponse|Response
-     *
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
+     * @return \FOS\RestBundle\View\View|JsonResponse
      */
     public function showAction(User $user, Request $request, UserManager $userManager)
     {
@@ -72,7 +69,7 @@ class UserController extends BaseController
                 );
             }
         }
-       return $this->generateCustomView($user, 200, 'user_show', ['id' => $user->getId()]);
+       return $this->generateApiResponse($user, 200, 'user_show', ['id' => $user->getId()]);
     }
 
     /**
@@ -132,6 +129,9 @@ class UserController extends BaseController
      *     description="The current page."
      * )
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
+     * @param Request $request
+     * @param UserManager $userManager
+     * @return \FOS\RestBundle\View\View
      */
     public function listAction(Request $request, UserManager $userManager)
     {
@@ -147,7 +147,7 @@ class UserController extends BaseController
                 'users'
             )
         );
-        return $this->generateCustomView($paginatedCollection, 200, 'user_list');
+        return $this->generateApiResponse($paginatedCollection, 200, 'user_list');
     }
 
     /**
@@ -207,7 +207,7 @@ class UserController extends BaseController
      * )
      * @Rest\View(statusCode=Response::HTTP_CREATED)
      * @Security("is_granted('ROLE_ADMIN')")
-     * @return JsonResponse|Response
+     * @return \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, UserManager $userManager)
     {
@@ -215,7 +215,7 @@ class UserController extends BaseController
         if (is_array($data)) {
             return $this->throwApiProblemValidationException($data);
         }
-        return $this->generateCustomView($data, 201, 'user_add');
+        return $this->generateApiResponse($data, 201, 'user_add');
     }
 
     /**
@@ -258,6 +258,9 @@ class UserController extends BaseController
      * @Rest\View(statusCode=204)
      * @Security("is_granted('ROLE_ADMIN')")
      * @param User $user
+     * @param Request $request
+     * @param UserManager $userManager
+     * @return JsonResponse
      */
     public function deleteAction(User $user, Request $request, UserManager $userManager)
     {
@@ -313,6 +316,7 @@ class UserController extends BaseController
      * )
      * @param User $user
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     * @return \FOS\RestBundle\View\View|JsonResponse
      */
     public function disableEnableAccountAction(User $user)
     {
@@ -325,7 +329,7 @@ class UserController extends BaseController
         $user->isActive()? $user->setActive(false) : $user->setActive(true);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->generateCustomView(
+        return $this->generateApiResponse(
             $user, 200, 'user_switch_active',
             ['id' => $user->getId()]
         );

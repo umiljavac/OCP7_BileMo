@@ -9,7 +9,7 @@
 namespace App\Service\EventSubscriber;
 
 use App\Exception\ApiProblemException;
-use App\Service\Helper\ApiProblem;
+use App\Service\Problem\ApiProblem;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

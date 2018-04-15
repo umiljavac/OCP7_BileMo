@@ -4,7 +4,7 @@ fos_rest:
 #    allowed_methods_listener:  true
 #    routing_loader: true
     view:
-        view_response_listener:  true
+        view_response_listener:  force
         formats: { json: true, xml: false, rss: false }
 
     body_converter:
@@ -19,3 +19,7 @@ fos_rest:
 
     body_listener:
         enabled: true
+
+    service:
+        serializer:
+            custom_serializer

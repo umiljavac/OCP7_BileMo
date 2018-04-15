@@ -3,7 +3,7 @@ jms_serializer:
         xml:
             format_output: '%kernel.debug%'
 #    metadata:
-#        auto_detection: false
+#       auto_detection: false
 #        directories:
 #            any-name:
 #                namespace_prefix: "My\\FooBundle"
