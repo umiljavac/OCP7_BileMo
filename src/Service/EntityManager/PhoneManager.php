@@ -25,8 +25,7 @@ class PhoneManager
         EntityManagerInterface $em,
         FormHelper $formHelper,
         ParamFetcherInterface $paramFetcher
-    )
-    {
+    ) {
         $this->em = $em;
         $this->repository = $em->getRepository(Phone::class);
         $this->formHelper = $formHelper;
@@ -81,8 +80,8 @@ class PhoneManager
     }
 
     /**
-     * @param Phone $phone
-     * @param Request $request
+     * @param Phone        $phone
+     * @param Request      $request
      * @param $clearMissing
      * @return Phone|array
      */

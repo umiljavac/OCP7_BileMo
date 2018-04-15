@@ -15,12 +15,12 @@ use Swagger\Annotations as SWG;
 
 /**
  * Class SecurityController
+ *
  * @package App\Controller
  */
 class SecurityController extends BaseController
 {
     /**
-     *
      * Connection to the API
      *
      * @SWG\Response(
@@ -39,7 +39,7 @@ class SecurityController extends BaseController
      *     description="Enter your password"
      * )
      * @Rest\View(statusCode=200)
-     * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
+     * @throws                       \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
      */
     public function apiLoginAction($username, $password, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -51,17 +51,20 @@ class SecurityController extends BaseController
         }
         if ($passwordEncoder->isPasswordValid($user, $password)) {
             $token = $this->get('lexik_jwt_authentication.encoder')
-                ->encode([
+                ->encode(
+                    [
                     'username' => $user->getUsername(),
                     'roles' => $user->getRoles(),
                     'client' => $user->getClient()->getid(),
                     'exp' => time() + 3600 // 1 hour expiration
-                ]);
-            return new JsonResponse([
+                    ]
+                );
+            return new JsonResponse(
+                [
                 'message' => 'Authentication succes : copy the token value into an Authorization header key.',
-                'token' => $token]);
-        }
-        else {
+                'token' => $token]
+            );
+        } else {
             $this->throwApiProblemCredentialsException();
         }
     }

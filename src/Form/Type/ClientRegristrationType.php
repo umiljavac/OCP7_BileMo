@@ -24,9 +24,11 @@ class ClientRegristrationType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+            array(
             'data_class' => Client::class,
             'csrf_protection' => false
-        ));
+            )
+        );
     }
 }

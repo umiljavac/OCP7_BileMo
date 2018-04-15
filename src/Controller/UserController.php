@@ -31,7 +31,7 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return one user resource",
-     *     @Model(type=User::class)
+     * @Model(type=User::class)
      * )
      * @SWG\Response(
      *     response=404,
@@ -53,11 +53,11 @@ class UserController extends BaseController
      *     name="user_show",
      *     requirements={"id"="\d+"}
      * )
-     * @param User $user
-     * @param Request $request
-     * @param UserManager $userManager
+     * @param                               User        $user
+     * @param                               Request     $request
+     * @param                               UserManager $userManager
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
-     * @return \FOS\RestBundle\View\View|JsonResponse
+     * @return                              \FOS\RestBundle\View\View|JsonResponse
      */
     public function showAction(User $user, Request $request, UserManager $userManager)
     {
@@ -69,7 +69,7 @@ class UserController extends BaseController
                 );
             }
         }
-       return $this->generateApiResponse($user, 200, 'user_show', ['id' => $user->getId()]);
+        return $this->generateApiResponse($user, 200, 'user_show', ['id' => $user->getId()]);
     }
 
     /**
@@ -129,9 +129,9 @@ class UserController extends BaseController
      *     description="The current page."
      * )
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
-     * @param Request $request
-     * @param UserManager $userManager
-     * @return \FOS\RestBundle\View\View
+     * @param                               Request     $request
+     * @param                               UserManager $userManager
+     * @return                              \FOS\RestBundle\View\View
      */
     public function listAction(Request $request, UserManager $userManager)
     {
@@ -142,7 +142,8 @@ class UserController extends BaseController
         $paginatedCollection = $pagerfantaFactory->createRepresentation(
             $pagerPackage['pager'],
             new Route('user_list', array('keyword' => $pagerPackage['keyword'])),
-            new CollectionRepresentation($pagerPackage['pager']->getCurrentPageResults(),
+            new CollectionRepresentation(
+                $pagerPackage['pager']->getCurrentPageResults(),
                 'users',
                 'users'
             )
@@ -156,7 +157,7 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=201,
      *     description="Return the created user resource",
-     *     @Model(type=User::class)
+     * @Model(type=User::class)
      * )
      * @SWG\Response(
      *     response=400,
@@ -199,15 +200,15 @@ class UserController extends BaseController
      * @SWG\Tag(name="Users")
      * @SEC(name="Bearer")
      *
-     * @param Request $request
-     * @param UserManager $userManager
+     * @param                                        Request     $request
+     * @param                                        UserManager $userManager
      * @Rest\Post(
      *     path="/api/users",
      *     name="user_add"
      * )
      * @Rest\View(statusCode=Response::HTTP_CREATED)
      * @Security("is_granted('ROLE_ADMIN')")
-     * @return \FOS\RestBundle\View\View
+     * @return                                       \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, UserManager $userManager)
     {
@@ -257,14 +258,14 @@ class UserController extends BaseController
      *
      * @Rest\View(statusCode=204)
      * @Security("is_granted('ROLE_ADMIN')")
-     * @param User $user
-     * @param Request $request
-     * @param UserManager $userManager
-     * @return JsonResponse
+     * @param                                User        $user
+     * @param                                Request     $request
+     * @param                                UserManager $userManager
+     * @return                               JsonResponse
      */
     public function deleteAction(User $user, Request $request, UserManager $userManager)
     {
-        if(!$user) {
+        if (!$user) {
             throw new NotFoundHttpException('This user does\'t exist');
         }
         if ($user->getClient()->getId() !== $userManager->getClientId($request) || $user === $this->getUser()) {
@@ -283,7 +284,7 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return the user informations",
-     *     @Model(type=User::class)
+     * @Model(type=User::class)
      * )
      * @SWG\Response(
      *     response=404,
@@ -314,9 +315,9 @@ class UserController extends BaseController
      *     path="/api/users/{id}",
      *     name="user_switch_active"
      * )
-     * @param User $user
+     * @param                                      User $user
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @return \FOS\RestBundle\View\View|JsonResponse
+     * @return                                     \FOS\RestBundle\View\View|JsonResponse
      */
     public function disableEnableAccountAction(User $user)
     {
@@ -330,7 +331,9 @@ class UserController extends BaseController
         $this->getDoctrine()->getManager()->flush();
 
         return $this->generateApiResponse(
-            $user, 200, 'user_switch_active',
+            $user,
+            200,
+            'user_switch_active',
             ['id' => $user->getId()]
         );
     }

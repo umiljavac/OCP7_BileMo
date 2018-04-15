@@ -53,9 +53,12 @@ class CustomSerializer extends SerializerBuilder implements JsonSerializerInterf
     {
         $serializedLinks = array();
         foreach ($links as $link) {
-            $serializedLink = array_merge(array(
+            $serializedLink = array_merge(
+                array(
                 'href' => $link->getHref(),
-            ), $link->getAttributes());
+                ),
+                $link->getAttributes()
+            );
 
             if (!isset($serializedLinks[$link->getRel()]) && 'curies' !== $link->getRel()) {
                 $serializedLinks[$link->getRel()] = $serializedLink;
@@ -72,14 +75,17 @@ class CustomSerializer extends SerializerBuilder implements JsonSerializerInterf
         $visitor->addData('_links', $serializedLinks);
     }
 
-    public function serializeEmbeddeds(array $embeddeds, JsonSerializationVisitor $visitor, SerializationContext $context)
-    {
+    public function serializeEmbeddeds(
+        array $embeddeds,
+        JsonSerializationVisitor $visitor,
+        SerializationContext $context
+    ) {
         $serializedEmbeddeds = array();
         $multiple = array();
 
         foreach ($embeddeds as $embedded) {
             $items = $embedded->getData();
-            
+
             if ($items[0] instanceof Phone) {
                 foreach ($items as $item) {
                     $item->setDescription(self::PHONE_DESC);

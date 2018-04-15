@@ -15,7 +15,7 @@ use Pagerfanta\Pagerfanta;
 
 abstract class AbstractRepository extends EntityRepository
 {
-    protected function paginate(QueryBuilder $qb, $limit = null, $offset = 0, $page = null)
+    protected function paginate(QueryBuilder $qb, $limit, $offset, $page = null)
     {
         if (0 == $limit) {
             throw new \LogicException('$limit & $offset must be greater than 0.');
@@ -26,7 +26,7 @@ abstract class AbstractRepository extends EntityRepository
 
         $pager->setMaxPerPage((int) $limit);
 
-        $pager->setCurrentPage( (int) $currentPage);
+        $pager->setCurrentPage((int) $currentPage);
 
         return $pager;
     }

@@ -19,15 +19,20 @@ abstract class BaseController extends FOSRestController
      * @param $data
      * @param $statusCode
      * @param $route
-     * @param array $routeOption
+     * @param array      $routeOption
+     *
      * @return View
      */
     protected function generateApiResponse($data, $statusCode, $route, array $routeOption = [])
     {
-        return new View($data, $statusCode, array(
+        return new View(
+            $data,
+            $statusCode,
+            array(
             'Content-Type' => 'application/hal+json',
             'Location' => $this->generateUrl($route, $routeOption)
-        ));
+            )
+        );
     }
 
     /**

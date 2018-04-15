@@ -22,15 +22,17 @@ class UserRegistrationType extends AbstractType
     {
         $builder
             ->add('username', TextType::class)
-            ->add('email', EmailType::class )
+            ->add('email', EmailType::class)
             ->add('plainPassword', PasswordType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+            array(
             'data_class' => User::class,
             'csrf_protection' => false
-        ));
+            )
+        );
     }
 }

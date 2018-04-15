@@ -12,19 +12,17 @@ use App\Entity\Phone;
  */
 class PhoneRepository extends AbstractRepository
 {
-    public function search($term, $order = 'asc', $limit, $offset, $page)
+    public function search($term, $order, $limit, $offset, $page)
     {
         $qb = $this
             ->createQueryBuilder('p')
             ->select('p')
-            ->orderBy('p.price', $order)
-        ;
+            ->orderBy('p.price', $order);
 
         if ($term) {
             $qb
                 ->where('p.mark LIKE ?1')
-                ->setParameter(1, '%'.$term.'%')
-            ;
+                ->setParameter(1, '%'.$term.'%');
         }
 
         return $this->paginate($qb, $limit, $offset, $page);
@@ -39,13 +37,12 @@ class PhoneRepository extends AbstractRepository
             ->where('p.mark LIKE ?1')
             ->setParameter(1, '%'.$mark.'%')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
-//    /**
-//     * @return Phone[] Returns an array of Phone objects
-//     */
+    //    /**
+    //     * @return Phone[] Returns an array of Phone objects
+    //     */
     /*
     public function findByExampleField($value)
     {

@@ -27,7 +27,7 @@ class ClientController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return one client",
-     *     @Model(type=Client::class)
+     * @Model(type=Client::class)
      * )
      * @SWG\Response(
      *     response=404,
@@ -60,12 +60,14 @@ class ClientController extends BaseController
      *     requirements={"id"="\d+"}
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *
      * @param Client $client
+     *
      * @return \FOS\RestBundle\View\View $view
      */
     public function showAction(Client $client)
     {
-        return $this->generateApiResponse($client, 200, 'client_show', ['id' => $client->getId()]) ;
+        return $this->generateApiResponse($client, 200, 'client_show', ['id' => $client->getId()]);
     }
 
     /**
@@ -99,7 +101,7 @@ class ClientController extends BaseController
      *     name="client_list"
      *     )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @return \FOS\RestBundle\View\View
+     * @return                                     \FOS\RestBundle\View\View
      */
     public function listAction()
     {
@@ -114,7 +116,7 @@ class ClientController extends BaseController
      * @SWG\Response(
      *     response=201,
      *     description="Return the created client resource",
-     *     @Model(type=Client::class)
+     * @Model(type=Client::class)
      * )
      * @SWG\Response(
      *     response=400,
@@ -142,7 +144,9 @@ class ClientController extends BaseController
      *     type="string",
      *     description="The name of the client"
      * )
+     *
      * @SWG\Tag(name="Clients")
+     *
      * @SEC(name="Bearer")
      *
      * @Rest\Post(
@@ -150,8 +154,10 @@ class ClientController extends BaseController
      *      name="client_add"
      * )
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @param Request $request
+     *
+     * @param Request       $request
      * @param ClientManager $clientManager
+     *
      * @return \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, ClientManager $clientManager)
@@ -169,7 +175,7 @@ class ClientController extends BaseController
      * @SWG\Response(
      *     response=201,
      *     description="Return the created client resource",
-     *     @Model(type=App\Entity\User::class)
+     * @Model(type=App\Entity\User::class)
      * )
      * @SWG\Response(
      *     response=400,
@@ -223,10 +229,13 @@ class ClientController extends BaseController
      *     name="admin_add",
      *     requirements={"id"="\d+"}
      * )
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @param Request $request
+     *
+     * @param Request     $request
      * @param UserManager $userManager
      * @param $id
+     *
      * @return \FOS\RestBundle\View\View
      */
     public function createAdminAction(Request $request, UserManager $userManager, $id)
