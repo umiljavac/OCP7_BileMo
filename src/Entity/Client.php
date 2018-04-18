@@ -123,7 +123,7 @@ class Client
     /**
      * @param User $user
      */
-    public function addUsers(User $user): void
+    public function addUser(User $user): void
     {
         $this->users[] = $user;
     }

@@ -59,11 +59,12 @@ class ClientController extends BaseController
      *     name="client_show",
      *     requirements={"id"="\d+"}
      * )
-     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      *
      * @param Client $client
      *
      * @return \FOS\RestBundle\View\View $view
+     *
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function showAction(Client $client)
     {
@@ -100,8 +101,10 @@ class ClientController extends BaseController
      *     path="/api/clients",
      *     name="client_list"
      *     )
+     *
+     * @return \FOS\RestBundle\View\View
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @return                                     \FOS\RestBundle\View\View
      */
     public function listAction()
     {
@@ -153,12 +156,13 @@ class ClientController extends BaseController
      *      path="/api/clients",
      *      name="client_add"
      * )
-     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      *
      * @param Request       $request
      * @param ClientManager $clientManager
      *
      * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function createAction(Request $request, ClientManager $clientManager)
     {
@@ -230,13 +234,13 @@ class ClientController extends BaseController
      *     requirements={"id"="\d+"}
      * )
      *
-     * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     *
      * @param Request     $request
      * @param UserManager $userManager
      * @param $id
      *
      * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function createAdminAction(Request $request, UserManager $userManager, $id)
     {

@@ -57,12 +57,16 @@ class PhoneController extends BaseController
      *     name="phone_show",
      *     requirements={"id"="\d+"}
      * )
-     * @Security("is_granted('ROLE_USER')")
+     *
      * @Rest\View(
      *     serializerGroups = {"detail"}
      * )
-     * @param                               Phone $phone
-     * @return                              \FOS\RestBundle\View\View
+     *
+     * @param Phone $phone
+     *
+     * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_USER')")
      */
     public function showAction(Phone $phone)
     {
@@ -126,8 +130,12 @@ class PhoneController extends BaseController
      *     default="1",
      *     description="The current page."
      * )
-     * @param            PhoneManager $phoneManager
-     * @return           mixed* @Security("is_granted('ROLE_USER')")
+     *
+     * @param PhoneManager $phoneManager
+     *
+     * @return mixed
+     *
+     * @Security("is_granted('ROLE_USER')")
      */
     public function listAction(PhoneManager $phoneManager)
     {
@@ -184,9 +192,13 @@ class PhoneController extends BaseController
      * @Rest\View(
      *     serializerGroups = {"mark"}
      * )
-     * @param      $mark
-     * @param      PhoneManager $phoneManager
-     * @return     \FOS\RestBundle\View\View
+     *
+     * @param $mark
+     * @param PhoneManager $phoneManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_USER')")
      */
     public function listPhonesByMark($mark, PhoneManager $phoneManager)
     {
@@ -257,11 +269,15 @@ class PhoneController extends BaseController
      *     path="/api/phones",
      *     name="phone_add"
      * )
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *
      * @Rest\View()
-     * @param                                      Request      $request
-     * @param                                      PhoneManager $phoneManager
-     * @return                                     \FOS\RestBundle\View\View
+     *
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     *
+     * @return \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, PhoneManager $phoneManager)
     {
@@ -315,12 +331,16 @@ class PhoneController extends BaseController
      *     name="phone_update_patch",
      *     requirements={"id"="\d+"}
      * )
-     * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *
      * @Rest\View()
-     * @param                                      Phone        $phone
-     * @param                                      Request      $request
-     * @param                                      PhoneManager $phoneManager
-     * @return                                     \FOS\RestBundle\View\View
+     *
+     * @param Phone $phone
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function patchAction(Phone $phone, Request $request, PhoneManager $phoneManager)
     {
@@ -377,11 +397,14 @@ class PhoneController extends BaseController
      *     name="phone_update_put",
      *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Phone $phone
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @param                                      Phone        $phone
-     * @param                                      Request      $request
-     * @param                                      PhoneManager $phoneManager
-     * @return                                     \FOS\RestBundle\View\View
      */
     public function putAction(Phone $phone, Request $request, PhoneManager $phoneManager)
     {
@@ -433,10 +456,13 @@ class PhoneController extends BaseController
      *     name="phone_delete",
      *     requirements={"id"="\d+"}
      * )
+     *
      * @Rest\View(statusCode=204)
+     *
+     * @param Phone $phone
+     * @param PhoneManager $phoneManager
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @param                                      Phone        $phone
-     * @param                                      PhoneManager $phoneManager
      */
     public function deleteAction(Phone $phone, PhoneManager $phoneManager)
     {

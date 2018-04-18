@@ -30,6 +30,7 @@ class SecurityController extends BaseController
      * @SWG\Tag(name="Login")
      *
      * @Rest\Post(path="/api/login", name="api_login")
+     *
      * @Rest\RequestParam(
      *     name = "username",
      *     description="Enter your username"
@@ -38,8 +39,10 @@ class SecurityController extends BaseController
      *     name = "password",
      *     description="Enter your password"
      * )
+     *
      * @Rest\View(statusCode=200)
-     * @throws                       \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
+     *
+     * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
      */
     public function apiLoginAction($username, $password, UserPasswordEncoderInterface $passwordEncoder)
     {

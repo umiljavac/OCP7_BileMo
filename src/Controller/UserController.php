@@ -38,6 +38,10 @@ class UserController extends BaseController
      *     description="return not found"
      * )
      * @SWG\Response(
+     *     response=403,
+     *     description="return message : access denied"
+     * )
+     * @SWG\Response(
      *     response=401,
      *     description="return message : authorization is required"
      * )
@@ -53,11 +57,14 @@ class UserController extends BaseController
      *     name="user_show",
      *     requirements={"id"="\d+"}
      * )
-     * @param                               User        $user
-     * @param                               Request     $request
-     * @param                               UserManager $userManager
+     *
+     * @param User $user
+     * @param Request $request
+     * @param UserManager $userManager
+     *
+     * @return \FOS\RestBundle\View\View|JsonResponse
+     *
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
-     * @return                              \FOS\RestBundle\View\View|JsonResponse
      */
     public function showAction(User $user, Request $request, UserManager $userManager)
     {
@@ -82,6 +89,10 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=404,
      *     description="return not found"
+     * )
+     * @SWG\Response(
+     *     response=403,
+     *     description="return message : access denied"
      * )
      * @SWG\Response(
      *     response=401,
@@ -128,10 +139,13 @@ class UserController extends BaseController
      *     default="1",
      *     description="The current page."
      * )
+     *
+     * @param Request $request
+     * @param UserManager $userManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
-     * @param                               Request     $request
-     * @param                               UserManager $userManager
-     * @return                              \FOS\RestBundle\View\View
      */
     public function listAction(Request $request, UserManager $userManager)
     {
@@ -200,15 +214,19 @@ class UserController extends BaseController
      * @SWG\Tag(name="Users")
      * @SEC(name="Bearer")
      *
-     * @param                                        Request     $request
-     * @param                                        UserManager $userManager
      * @Rest\Post(
      *     path="/api/users",
      *     name="user_add"
      * )
+     *
      * @Rest\View(statusCode=Response::HTTP_CREATED)
+     *
+     * @param Request $request
+     * @param UserManager $userManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @return                                       \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, UserManager $userManager)
     {
@@ -248,20 +266,25 @@ class UserController extends BaseController
      *     type="string",
      *     description="The unique id of the phone to delete"
      * )
+     *
+     * @SWG\Tag(name="Users")
+     * @SEC(name="Bearer")
+     *
      * @Rest\Delete(
      *     path="/api/users/{id}",
      *     name="user_delete",
      *     requirements={"id"="\d+"}
      * )
-     * @SWG\Tag(name="Users")
-     * @SEC(name="Bearer")
      *
      * @Rest\View(statusCode=204)
+     *
+     * @param User $user
+     * @param Request $request
+     * @param UserManager $userManager
+     *
+     * @return JsonResponse
+     *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @param                                User        $user
-     * @param                                Request     $request
-     * @param                                UserManager $userManager
-     * @return                               JsonResponse
      */
     public function deleteAction(User $user, Request $request, UserManager $userManager)
     {
@@ -315,9 +338,12 @@ class UserController extends BaseController
      *     path="/api/users/{id}",
      *     name="user_switch_active"
      * )
-     * @param                                      User $user
+     *
+     * @param User $user
+     *
+     * @return \FOS\RestBundle\View\View|JsonResponse
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     * @return                                     \FOS\RestBundle\View\View|JsonResponse
      */
     public function disableEnableAccountAction(User $user)
     {
