@@ -6,9 +6,9 @@
  * Time: 11:29
  */
 
-namespace App\Service\Helper;
-use Symfony\Component\HttpFoundation\Response;
+namespace App\Service\Problem;
 
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * A wrapper for holding data to be used for a application/problem+json response

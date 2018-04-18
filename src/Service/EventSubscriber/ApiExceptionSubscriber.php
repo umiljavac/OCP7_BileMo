@@ -9,7 +9,7 @@
 namespace App\Service\EventSubscriber;
 
 use App\Exception\ApiProblemException;
-use App\Service\Helper\ApiProblem;
+use App\Service\Problem\ApiProblem;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -19,7 +19,6 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
-
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $e = $event->getException();
@@ -29,7 +28,7 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             $apiProblem = new ApiProblem(400, ApiProblem::TYPE_INVALID_REQUEST_BODY_FORMAT);
         } else {
             $statusCode = $e instanceof HttpException ? $e->getStatusCode() : 500;
-            $apiProblem = new ApiProblem ($statusCode);
+            $apiProblem = new ApiProblem($statusCode);
             $apiProblem->set('detail', $e->getMessage());
         }
 

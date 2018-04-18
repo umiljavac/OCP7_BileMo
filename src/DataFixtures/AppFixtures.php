@@ -43,7 +43,19 @@ class AppFixtures extends Fixture
             $phone = new Phone();
             $phone->setMark('Sungsong');
             $phone->setReference('SG-'.$i);
-            $phone->setDescription('The Sungsong sg-'. $i .' is one of the best smartphone of the universe !');
+            $phone->setDescription(
+                'The Sungsong sg-'. $i .' is one of the best smartphone of the universe ! '
+                . 'Vita est illis semper in fuga uxoresque mercenariae conductae ad tempus '
+                . 'ex pacto atque, ut sit species matrimonii, dotis nomine futura coniunx '
+                . 'hastam et tabernaculum offert marito, post statum diem si id elegerit '
+                . 'discessura, et incredibile est quo ardore apud eos in venerem uterque solvitur '
+                . 'sexus.Eius populus ab incunabulis primis ad usque pueritiae tempus extremum, '
+                . 'quod annis circumcluditur fere trecentis, circummurana pertulit bella, deinde '
+                . 'aetatem ingressus adultam post multiplices bellorum aerumnas Alpes transcendit '
+                . 'et fretum, in iuvenem erectus et virum ex omni plaga quam orbis ambit inmensus, '
+                . 'reportavit laureas et triumphos, iamque vergens in senium et nomine solo '
+                . 'aliquotiens vincens ad tranquilliora vitae discessit.'
+            );
             $phone->setPrice($i * 4 + rand(100, 500));
             $manager->persist($phone);
         }
@@ -52,7 +64,19 @@ class AppFixtures extends Fixture
             $phone = new Phone();
             $phone->setMark('Noukio');
             $phone->setReference('NK-'.$e);
-            $phone->setDescription('The Noukio HH-' . $e . ' has all you could never imagine in a smartphone !');
+            $phone->setDescription(
+                'The Noukio HH-' . $e . ' has all you could never imagine in a smartphone ! '
+                . 'Vita est illis semper in fuga uxoresque mercenariae conductae ad tempus '
+                . 'ex pacto atque, ut sit species matrimonii, dotis nomine futura coniunx '
+                . 'hastam et tabernaculum offert marito, post statum diem si id elegerit '
+                . 'discessura, et incredibile est quo ardore apud eos in venerem uterque solvitur '
+                . 'sexus.Eius populus ab incunabulis primis ad usque pueritiae tempus extremum, '
+                . 'quod annis circumcluditur fere trecentis, circummurana pertulit bella, deinde '
+                . 'aetatem ingressus adultam post multiplices bellorum aerumnas Alpes transcendit '
+                . 'et fretum, in iuvenem erectus et virum ex omni plaga quam orbis ambit inmensus, '
+                . 'reportavit laureas et triumphos, iamque vergens in senium et nomine solo '
+                . 'aliquotiens vincens ad tranquilliora vitae discessit.'
+            );
             $phone->setPrice($e * 4 + rand(100, 500));
             $manager->persist($phone);
         }
@@ -61,7 +85,19 @@ class AppFixtures extends Fixture
             $phone = new Phone();
             $phone->setMark('Ifon');
             $phone->setReference('IF-'.$a);
-            $phone->setDescription('The Ifon IF-' . $a . ' will never disappoint you !');
+            $phone->setDescription(
+                'The Ifon IF-' . $a . ' will never disappoint you ! '
+                . 'Vita est illis semper in fuga uxoresque mercenariae conductae ad tempus '
+                . 'ex pacto atque, ut sit species matrimonii, dotis nomine futura coniunx '
+                . 'hastam et tabernaculum offert marito, post statum diem si id elegerit '
+                . 'discessura, et incredibile est quo ardore apud eos in venerem uterque solvitur '
+                . 'sexus.Eius populus ab incunabulis primis ad usque pueritiae tempus extremum, '
+                . 'quod annis circumcluditur fere trecentis, circummurana pertulit bella, deinde '
+                . 'aetatem ingressus adultam post multiplices bellorum aerumnas Alpes transcendit '
+                . 'et fretum, in iuvenem erectus et virum ex omni plaga quam orbis ambit inmensus, '
+                . 'reportavit laureas et triumphos, iamque vergens in senium et nomine solo '
+                . 'aliquotiens vincens ad tranquilliora vitae discessit.'
+            );
             $phone->setPrice($a * 4 + rand(100, 500));
             $manager->persist($phone);
         }
@@ -70,7 +106,19 @@ class AppFixtures extends Fixture
             $phone = new Phone();
             $phone->setMark('Wiwo');
             $phone->setReference('WI-'.$b);
-            $phone->setDescription('The Wiwo IF-' . $b . ' is one of the best smartphone of the galaxy !');
+            $phone->setDescription(
+                'The Wiwo IF-' . $b . ' is one of the best smartphone of the galaxy ! '
+                . 'Vita est illis semper in fuga uxoresque mercenariae conductae ad tempus '
+                . 'ex pacto atque, ut sit species matrimonii, dotis nomine futura coniunx '
+                . 'hastam et tabernaculum offert marito, post statum diem si id elegerit '
+                . 'discessura, et incredibile est quo ardore apud eos in venerem uterque solvitur '
+                . 'sexus.Eius populus ab incunabulis primis ad usque pueritiae tempus extremum, '
+                . 'quod annis circumcluditur fere trecentis, circummurana pertulit bella, deinde '
+                . 'aetatem ingressus adultam post multiplices bellorum aerumnas Alpes transcendit '
+                . 'et fretum, in iuvenem erectus et virum ex omni plaga quam orbis ambit inmensus, '
+                . 'reportavit laureas et triumphos, iamque vergens in senium et nomine solo '
+                . 'aliquotiens vincens ad tranquilliora vitae discessit.'
+            );
             $phone->setPrice($b * 4 + rand(100, 500));
             $manager->persist($phone);
         }

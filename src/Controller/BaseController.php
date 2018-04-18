@@ -9,11 +9,9 @@
 namespace App\Controller;
 
 use App\Exception\ApiProblemException;
-use App\Service\Helper\ApiProblem;
+use App\Service\Problem\ApiProblem;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 abstract class BaseController extends FOSRestController
 {
@@ -21,50 +19,24 @@ abstract class BaseController extends FOSRestController
      * @param $data
      * @param $statusCode
      * @param $route
-     * @param array $routeOption
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param array      $routeOption
+     *
+     * @return View
      */
-    protected function generateCustomView($data, $statusCode, $route, array $routeOption = [])
+    protected function generateApiResponse($data, $statusCode, $route, array $routeOption = [])
     {
-        $view = $this->view($data, $statusCode, array(
-            'Content-Type' => 'application/hal+json',
-            'Location' => $this->generateUrl($route, $routeOption)
-        ));
-
-        return $this->handleView($view);
-    }
-
-    protected function generateApiView($data, $statusCode, $route, array $routeOption = [])
-    {
-        return new View($data, $statusCode, array(
-            'Content-Type' => 'application/hal+json',
-            'Location' => $this->generateUrl($route, $routeOption)
-        ));
-    }
-
-    /**
-     * @param $data
-     * @param $statusCode
-     * @param $route
-     * @param array $routeParameter
-     * @return Response
-     */
-    protected function generateCustomResponse($data, $statusCode, $route, array $routeParameter = [])
-    {
-        $response = new Response(
+        return new View(
             $data,
             $statusCode,
-            [
-                'Content-Type' => 'application/hal+json',
-                'Location' => $this->generateUrl($route, $routeParameter)
-            ]
+            array(
+            'Content-Type' => 'application/hal+json',
+            'Location' => $this->generateUrl($route, $routeOption)
+            )
         );
-        return $response;
     }
 
     /**
      * @param $data
-     * @return JsonResponse
      */
     protected function throwApiProblemValidationException($data)
     {

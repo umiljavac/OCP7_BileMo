@@ -14,13 +14,11 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Hateoas\Configuration\Route;
 use Hateoas\Representation\CollectionRepresentation;
 use Hateoas\Representation\Factory\PagerfantaFactory;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security as SEC;
-
 
 class PhoneController extends BaseController
 {
@@ -31,7 +29,7 @@ class PhoneController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return the full description of a phone",
-     *     @Model(type=Phone::class, groups={"detail"})
+     * @Model(type=Phone::class, groups={"detail"})
      * )
      * @SWG\Response(
      *     response=404,
@@ -60,16 +58,19 @@ class PhoneController extends BaseController
      *     requirements={"id"="\d+"}
      * )
      *
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @Security("is_granted('ROLE_USER')")
      * @Rest\View(
      *     serializerGroups = {"detail"}
      * )
+     *
      * @param Phone $phone
+     *
+     * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_USER')")
      */
     public function showAction(Phone $phone)
     {
-        return $this->generateApiView($phone, 200, 'phone_show', ['id' => $phone->getId()]);
+        return $this->generateApiResponse($phone, 200, 'phone_show', ['id' => $phone->getId()]);
     }
 
 
@@ -129,8 +130,11 @@ class PhoneController extends BaseController
      *     default="1",
      *     description="The current page."
      * )
-     * @Rest\View(serializerGroups = {"detail, list"})
+     *
+     * @param PhoneManager $phoneManager
+     *
      * @return mixed
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function listAction(PhoneManager $phoneManager)
@@ -142,12 +146,13 @@ class PhoneController extends BaseController
         $paginatedCollection = $pagerfantaFactory->createRepresentation(
             $pagerPackage['pager'],
             new Route('phone_list', array('keyword' => $pagerPackage['keyword'])),
-            new CollectionRepresentation($pagerPackage['pager']->getCurrentPageResults(),
-            'phones',
-            'phones'
+            new CollectionRepresentation(
+                $pagerPackage['pager']->getCurrentPageResults(),
+                'phones',
+                'phones'
             )
         );
-        return $this->generateCustomView($paginatedCollection, 200, 'phone_list');
+        return $this->generateApiResponse($paginatedCollection, 200, 'phone_list');
     }
 
     /**
@@ -156,7 +161,7 @@ class PhoneController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return the full list of phones of the same mark ",
-     *     @Model(type=Phone::class, groups={"mark"})
+     * @Model(type=Phone::class, groups={"mark"})
      * )
      * @SWG\Response(
      *     response=404,
@@ -187,16 +192,21 @@ class PhoneController extends BaseController
      * @Rest\View(
      *     serializerGroups = {"mark"}
      * )
+     *
      * @param $mark
      * @param PhoneManager $phoneManager
+     *
      * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_USER')")
      */
     public function listPhonesByMark($mark, PhoneManager $phoneManager)
     {
-        return $this->generateApiView(
+        return $this->generateApiResponse(
             $phoneManager->listPhonesByMark($mark),
             200,
-            'phone_list_mark', ['mark' => $mark]
+            'phone_list_mark',
+            ['mark' => $mark]
         );
     }
 
@@ -206,7 +216,7 @@ class PhoneController extends BaseController
      * @SWG\Response(
      *     response=201,
      *     description="Return the created phone resource",
-     *     @Model(type=Phone::class, groups={"detail"})
+     * @Model(type=Phone::class, groups={"detail"})
      * )
      * @SWG\Response(
      *     response=400,
@@ -259,8 +269,15 @@ class PhoneController extends BaseController
      *     path="/api/phones",
      *     name="phone_add"
      * )
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *
      * @Rest\View()
+     *
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     *
+     * @return \FOS\RestBundle\View\View
      */
     public function createAction(Request $request, PhoneManager $phoneManager)
     {
@@ -269,7 +286,7 @@ class PhoneController extends BaseController
             $this->throwApiProblemValidationException($data);
         }
 
-        return $this->generateApiView($data, 201, 'phone_add');
+        return $this->generateApiResponse($data, 201, 'phone_add');
     }
 
     /**
@@ -278,7 +295,7 @@ class PhoneController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return the updated phone resource",
-     *     @Model(type=Phone::class, groups={"detail"})
+     * @Model(type=Phone::class, groups={"detail"})
      * )
      * @SWG\Response(
      *     response=400,
@@ -314,12 +331,20 @@ class PhoneController extends BaseController
      *     name="phone_update_patch",
      *     requirements={"id"="\d+"}
      * )
-     * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *
      * @Rest\View()
+     *
+     * @param Phone $phone
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function patchAction(Phone $phone, Request $request, PhoneManager $phoneManager)
     {
-        if(!$phone) {
+        if (!$phone) {
             $this->createNotFoundException();
         }
         $data = $phoneManager->updatePhone($phone, $request, false);
@@ -327,7 +352,7 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
-        return $this->generateApiView($data, 200, 'phone_update_patch', ['id' => $phone->getId()]);
+        return $this->generateApiResponse($data, 200, 'phone_update_patch', ['id' => $phone->getId()]);
     }
 
     /**
@@ -336,7 +361,7 @@ class PhoneController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return the updated phone resource",
-     *     @Model(type=Phone::class, groups={"detail"})
+     * @Model(type=Phone::class, groups={"detail"})
      * )
      * @SWG\Response(
      *     response=400,
@@ -372,11 +397,18 @@ class PhoneController extends BaseController
      *     name="phone_update_put",
      *     requirements={"id"="\d+"}
      * )
+     *
+     * @param Phone $phone
+     * @param Request $request
+     * @param PhoneManager $phoneManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function putAction(Phone $phone, Request $request, PhoneManager $phoneManager)
     {
-        if(!$phone) {
+        if (!$phone) {
             $this->createNotFoundException();
         }
         $data = $phoneManager->updatePhone($phone, $request, true);
@@ -384,7 +416,7 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
-        return $this->generateApiView($data,200, 'phone_update_put', ['id' => $phone->getId()]);
+        return $this->generateApiResponse($data, 200, 'phone_update_put', ['id' => $phone->getId()]);
     }
 
     /**
@@ -424,7 +456,12 @@ class PhoneController extends BaseController
      *     name="phone_delete",
      *     requirements={"id"="\d+"}
      * )
+     *
      * @Rest\View(statusCode=204)
+     *
+     * @param Phone $phone
+     * @param PhoneManager $phoneManager
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function deleteAction(Phone $phone, PhoneManager $phoneManager)

@@ -11,7 +11,6 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\EntityManager\UserManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Hateoas\Configuration\Annotation\Exclusion;
 use Hateoas\Configuration\Route;
 use Hateoas\Representation\CollectionRepresentation;
 use Hateoas\Representation\Factory\PagerfantaFactory;
@@ -32,11 +31,15 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return one user resource",
-     *     @Model(type=User::class)
+     * @Model(type=User::class)
      * )
      * @SWG\Response(
      *     response=404,
      *     description="return not found"
+     * )
+     * @SWG\Response(
+     *     response=403,
+     *     description="return message : access denied"
      * )
      * @SWG\Response(
      *     response=401,
@@ -54,11 +57,12 @@ class UserController extends BaseController
      *     name="user_show",
      *     requirements={"id"="\d+"}
      * )
+     *
      * @param User $user
      * @param Request $request
      * @param UserManager $userManager
      *
-     * @return JsonResponse|Response
+     * @return \FOS\RestBundle\View\View|JsonResponse
      *
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
@@ -72,7 +76,7 @@ class UserController extends BaseController
                 );
             }
         }
-       return $this->generateCustomView($user, 200, 'user_show', ['id' => $user->getId()]);
+        return $this->generateApiResponse($user, 200, 'user_show', ['id' => $user->getId()]);
     }
 
     /**
@@ -85,6 +89,10 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=404,
      *     description="return not found"
+     * )
+     * @SWG\Response(
+     *     response=403,
+     *     description="return message : access denied"
      * )
      * @SWG\Response(
      *     response=401,
@@ -131,6 +139,12 @@ class UserController extends BaseController
      *     default="1",
      *     description="The current page."
      * )
+     *
+     * @param Request $request
+     * @param UserManager $userManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
     public function listAction(Request $request, UserManager $userManager)
@@ -142,12 +156,13 @@ class UserController extends BaseController
         $paginatedCollection = $pagerfantaFactory->createRepresentation(
             $pagerPackage['pager'],
             new Route('user_list', array('keyword' => $pagerPackage['keyword'])),
-            new CollectionRepresentation($pagerPackage['pager']->getCurrentPageResults(),
+            new CollectionRepresentation(
+                $pagerPackage['pager']->getCurrentPageResults(),
                 'users',
                 'users'
             )
         );
-        return $this->generateCustomView($paginatedCollection, 200, 'user_list');
+        return $this->generateApiResponse($paginatedCollection, 200, 'user_list');
     }
 
     /**
@@ -156,7 +171,7 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=201,
      *     description="Return the created user resource",
-     *     @Model(type=User::class)
+     * @Model(type=User::class)
      * )
      * @SWG\Response(
      *     response=400,
@@ -199,15 +214,19 @@ class UserController extends BaseController
      * @SWG\Tag(name="Users")
      * @SEC(name="Bearer")
      *
-     * @param Request $request
-     * @param UserManager $userManager
      * @Rest\Post(
      *     path="/api/users",
      *     name="user_add"
      * )
+     *
      * @Rest\View(statusCode=Response::HTTP_CREATED)
+     *
+     * @param Request $request
+     * @param UserManager $userManager
+     *
+     * @return \FOS\RestBundle\View\View
+     *
      * @Security("is_granted('ROLE_ADMIN')")
-     * @return JsonResponse|Response
      */
     public function createAction(Request $request, UserManager $userManager)
     {
@@ -215,7 +234,7 @@ class UserController extends BaseController
         if (is_array($data)) {
             return $this->throwApiProblemValidationException($data);
         }
-        return $this->generateCustomView($data, 201, 'user_add');
+        return $this->generateApiResponse($data, 201, 'user_add');
     }
 
     /**
@@ -247,21 +266,29 @@ class UserController extends BaseController
      *     type="string",
      *     description="The unique id of the phone to delete"
      * )
+     *
+     * @SWG\Tag(name="Users")
+     * @SEC(name="Bearer")
+     *
      * @Rest\Delete(
      *     path="/api/users/{id}",
      *     name="user_delete",
      *     requirements={"id"="\d+"}
      * )
-     * @SWG\Tag(name="Users")
-     * @SEC(name="Bearer")
      *
      * @Rest\View(statusCode=204)
-     * @Security("is_granted('ROLE_ADMIN')")
+     *
      * @param User $user
+     * @param Request $request
+     * @param UserManager $userManager
+     *
+     * @return JsonResponse
+     *
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function deleteAction(User $user, Request $request, UserManager $userManager)
     {
-        if(!$user) {
+        if (!$user) {
             throw new NotFoundHttpException('This user does\'t exist');
         }
         if ($user->getClient()->getId() !== $userManager->getClientId($request) || $user === $this->getUser()) {
@@ -280,7 +307,7 @@ class UserController extends BaseController
      * @SWG\Response(
      *     response=200,
      *     description="Return the user informations",
-     *     @Model(type=User::class)
+     * @Model(type=User::class)
      * )
      * @SWG\Response(
      *     response=404,
@@ -311,7 +338,11 @@ class UserController extends BaseController
      *     path="/api/users/{id}",
      *     name="user_switch_active"
      * )
+     *
      * @param User $user
+     *
+     * @return \FOS\RestBundle\View\View|JsonResponse
+     *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
     public function disableEnableAccountAction(User $user)
@@ -325,8 +356,10 @@ class UserController extends BaseController
         $user->isActive()? $user->setActive(false) : $user->setActive(true);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->generateCustomView(
-            $user, 200, 'user_switch_active',
+        return $this->generateApiResponse(
+            $user,
+            200,
+            'user_switch_active',
             ['id' => $user->getId()]
         );
     }

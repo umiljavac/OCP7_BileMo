@@ -23,15 +23,16 @@ class PhoneType extends AbstractType
             ->add('mark', TextType::class)
             ->add('reference', TextType::class)
             ->add('description', TextType::class)
-            ->add('price', MoneyType::class)
-            ;
+            ->add('price', MoneyType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+            array(
             'data_class' => Phone::class,
             'csrf_protection' => false
-        ));
+            )
+        );
     }
 }

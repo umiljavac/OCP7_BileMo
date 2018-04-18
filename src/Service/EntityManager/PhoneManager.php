@@ -25,8 +25,7 @@ class PhoneManager
         EntityManagerInterface $em,
         FormHelper $formHelper,
         ParamFetcherInterface $paramFetcher
-    )
-    {
+    ) {
         $this->em = $em;
         $this->repository = $em->getRepository(Phone::class);
         $this->formHelper = $formHelper;
@@ -42,6 +41,12 @@ class PhoneManager
             $this->paramFetcher->get('offset'),
             $this->paramFetcher->get('page')
         );
+
+        foreach ($pager->getCurrentPageResults() as $phoneObject) {
+            $desc = substr($phoneObject->getDescription(), 0, 90);
+            $phoneObject->setDescription($desc . ' ...');
+        }
+
         $pagerPackage['pager'] = $pager;
         $pagerPackage['keyword'] = $this->paramFetcher->get('keyword');
         return $pagerPackage;
@@ -81,8 +86,8 @@ class PhoneManager
     }
 
     /**
-     * @param Phone $phone
-     * @param Request $request
+     * @param Phone        $phone
+     * @param Request      $request
      * @param $clearMissing
      * @return Phone|array
      */

@@ -29,13 +29,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     )
  * )
  * @Hateoas\Relation(
- *     "add-client",
- *     href = @Hateoas\Route(
- *          "client_add",
- *          absolute=true
- *     )
- * )
- * @Hateoas\Relation(
  *     "add-client-admin",
  *     href = @Hateoas\Route(
  *          "admin_add",
@@ -130,7 +123,7 @@ class Client
     /**
      * @param User $user
      */
-    public function addUsers(User $user): void
+    public function addUser(User $user): void
     {
         $this->users[] = $user;
     }

@@ -30,3 +30,6 @@ services:
     jwt_token_authenticator:
                 class: App\Security\JwtTokenAuthenticator
                 autowire: true
+
+    custom_serializer:
+            class: App\Service\Serializer\CustomSerializer

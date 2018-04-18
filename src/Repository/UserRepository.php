@@ -15,21 +15,19 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 class UserRepository extends AbstractRepository
 {
 
-    public function search($client, $term, $order = 'asc', $limit, $offset, $page)
+    public function search($client, $term, $order, $limit, $offset, $page)
     {
         $qb = $this
             ->createQueryBuilder('u')
             ->andWhere('u.client = :val')
             ->setParameter('val', $client)
             ->select('u')
-            ->orderBy('u.id', $order)
-        ;
+            ->orderBy('u.id', $order);
 
         if ($term) {
             $qb
                 ->where('u.roles LIKE ?1')
-                ->setParameter(1, '%'.$term.'%')
-            ;
+                ->setParameter(1, '%'.$term.'%');
         }
 
         return $this->paginate($qb, $limit, $offset, $page);
@@ -46,8 +44,7 @@ class UserRepository extends AbstractRepository
             ->setParameter('val', $client)
             ->orderBy('u.id', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     /**
@@ -64,7 +61,6 @@ class UserRepository extends AbstractRepository
             ->andWhere('u.id = :val2')
             ->setParameter('val2', $id)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 }

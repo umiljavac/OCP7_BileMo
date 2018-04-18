@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hateoas\Configuration\Annotation as Hateoas;
 
-
 /**
  * @ORM\Table("api_users")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -256,20 +255,26 @@ class User implements AdvancedUserInterface, \Serializable
         return $this->isActive;
     }
 
-    /** @see \Serializable::serialize() */
+    /**
+     * @see \Serializable::serialize()
+     */
     public function serialize()
     {
-        return serialize(array(
+        return serialize(
+            array(
             $this->id,
             $this->username,
             $this->password,
             $this->isActive,
             // see section on salt below
             // $this->salt,
-        ));
+            )
+        );
     }
 
-    /** @see \Serializable::unserialize() */
+    /**
+     * @see \Serializable::unserialize()
+     */
     /**
      * @param $serialized
      */

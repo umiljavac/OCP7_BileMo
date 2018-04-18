@@ -32,8 +32,7 @@ class UserManager
         JwtTokenAuthenticator $authenticator,
         FormHelper $formHelper,
         ParamFetcherInterface $paramFetcher
-    )
-    {
+    ) {
         $this->em = $em;
         $this->repository = $em->getRepository(User::class);
         $this->passwordEncoder = $passwordEncoder;
