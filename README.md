@@ -36,7 +36,14 @@ In addition to the Symfony framework this project uses several bundles:
   * Create all the tables 
     * `$ php bin/console doctrine:migrations:diff`  
     * `$ php bin/console doctrine:migrations:migrate`
- 5. Optional :
+ 5. Configure the JWT authentication :
+   * Generate the SSH keys : 
+     * `$ mkdir -p config/jwt` For Symfony3+, no need of the -p option
+     * `$ openssl genrsa -out config/jwt/private.pem -aes256 4096`
+     * `$ openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem`
+   * You may also have to adjust your config parameters :
+     * Please refer to [LexikJWTAuthenticationBundle-doc-configuration](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#configuration)
+ 6. Optional :
 * Just after installation, you can fill the database with a set of data examples allready written in the Datafixtures folder. 
 * Fill the database with the data set example `$ php bin/console doctrine:fixtures:load` press `y`.
 * You can also use `$ php bin\console app:fixturesReload` command to achieve this. 
