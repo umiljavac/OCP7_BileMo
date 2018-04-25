@@ -42,7 +42,7 @@ In addition to the Symfony framework this project uses several bundles:
      * `$ openssl genrsa -out config/jwt/private.pem -aes256 4096`
      * `$ openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem`
    * You may also have to adjust your config parameters :
-     * Please refer to [LexikJWTAuthenticationBundle-doc-configuration](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#configuration)
+     * Please refer to [LexikJWTAuthenticationBundle-doc-configuration](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/index.md#configuration) for a standard configuration and more details. 
  6. Optional :
 * Just after installation, you can fill the database with a set of data examples allready written in the Datafixtures folder. 
 * Fill the database with the data set example `$ php bin/console doctrine:fixtures:load` press `y`.
@@ -50,5 +50,5 @@ In addition to the Symfony framework this project uses several bundles:
 
 ## 5-Documentation
 * The Api comes with a documentation created with the NelmioApiDocBundle. 
-* To read it, go to "localhost:yourServerPort/api/doc" on your web browser.
+* To read it, go to "http://localhost:yourServerPort/api/doc" on your web browser.
 ## That's it !   
