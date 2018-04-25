@@ -50,5 +50,5 @@ In addition to the Symfony framework this project uses several bundles:
 
 ## 5-Documentation
 * The Api comes with a documentation created with the NelmioApiDocBundle. 
-* To read it, go to "http://localhost:yourServerPort/api/doc" on your web browser.
+* To read it, go to `http://localhost:yourServerPort/api/doc` on your web browser.
 ## That's it !   
