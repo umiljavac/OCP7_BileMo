@@ -85,14 +85,14 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"list","detail"})
+     * @Groups({"list","detail", "mark"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=100)
      * @Assert\NotBlank()
-     * @Groups({"list", "detail"})
+     * @Groups({"list", "detail", "mark"})
      */
     private $mark;
 
@@ -106,7 +106,7 @@ class Phone
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
-     * @Groups({"detail"})
+     * @Groups({"detail", "mark"})
      */
     private $description;
 

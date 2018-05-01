@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\Cache\CacheManager;
 use App\Service\EntityManager\UserManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Hateoas\Configuration\Route;
@@ -61,12 +62,15 @@ class UserController extends BaseController
      * @param User $user
      * @param Request $request
      * @param UserManager $userManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View|JsonResponse
      *
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
-    public function showAction(User $user, Request $request, UserManager $userManager)
+    public function showAction(User $user, Request $request, UserManager $userManager, CacheManager $cacheManager)
     {
         if ($this->getUser()->getRoles() !== ['ROLE_SUPER_ADMIN']) {
             if ($user->getClient() !== $userManager->getClient($request)) {
@@ -76,6 +80,8 @@ class UserController extends BaseController
                 );
             }
         }
+        $cacheManager->saveResourcesOnCache($user, $request, $user->getClient()->getId());
+
         return $this->generateApiResponse($user, 200, 'user_show', ['id' => $user->getId()]);
     }
 
@@ -142,12 +148,15 @@ class UserController extends BaseController
      *
      * @param Request $request
      * @param UserManager $userManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View
      *
      * @Security("is_granted(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'])")
      */
-    public function listAction(Request $request, UserManager $userManager)
+    public function listAction(Request $request, UserManager $userManager, CacheManager $cacheManager)
     {
         $pagerPackage = $userManager->getPager($request);
 
@@ -162,6 +171,8 @@ class UserController extends BaseController
                 'users'
             )
         );
+        $cacheManager->saveResourcesOnCache($paginatedCollection, $request, $pagerPackage['clientId']);
+
         return $this->generateApiResponse($paginatedCollection, 200, 'user_list');
     }
 
@@ -223,17 +234,23 @@ class UserController extends BaseController
      *
      * @param Request $request
      * @param UserManager $userManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function createAction(Request $request, UserManager $userManager)
+    public function createAction(Request $request, UserManager $userManager, CacheManager $cacheManager)
     {
         $data = $userManager->registerUser($request);
+
         if (is_array($data)) {
             return $this->throwApiProblemValidationException($data);
         }
+        $cacheManager->cleanCachedUsersResources($data);
+
         return $this->generateApiResponse($data, 201, 'user_add');
     }
 
@@ -281,12 +298,15 @@ class UserController extends BaseController
      * @param User $user
      * @param Request $request
      * @param UserManager $userManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return JsonResponse
      *
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function deleteAction(User $user, Request $request, UserManager $userManager)
+    public function deleteAction(User $user, Request $request, UserManager $userManager, CacheManager $cacheManager)
     {
         if (!$user) {
             throw new NotFoundHttpException('This user does\'t exist');
@@ -297,6 +317,7 @@ class UserController extends BaseController
                 Response::HTTP_FORBIDDEN
             );
         }
+        $cacheManager->cleanCachedUsersResources($user);
         $userManager->deleteUser($user);
         return;
     }
@@ -353,7 +374,7 @@ class UserController extends BaseController
                 Response::HTTP_FORBIDDEN
             );
         }
-        $user->isActive()? $user->setActive(false) : $user->setActive(true);
+        $user->isActive() ? $user->setActive(false) : $user->setActive(true);
         $this->getDoctrine()->getManager()->flush();
 
         return $this->generateApiResponse(

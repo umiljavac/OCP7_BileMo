@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 use App\Entity\Phone;
+use App\Service\Cache\CacheManager;
 use App\Service\EntityManager\PhoneManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Hateoas\Configuration\Route;
@@ -63,13 +64,19 @@ class PhoneController extends BaseController
      * )
      *
      * @param Phone $phone
+     * @param Request $request
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View
      *
      * @Security("is_granted('ROLE_USER')")
      */
-    public function showAction(Phone $phone)
+    public function showAction(Phone $phone, Request $request, CacheManager $cacheManager)
     {
+        $cacheManager->saveResourcesOnCache($phone, $request);
+
         return $this->generateApiResponse($phone, 200, 'phone_show', ['id' => $phone->getId()]);
     }
 
@@ -115,7 +122,7 @@ class PhoneController extends BaseController
      * @Rest\QueryParam(
      *     name="limit",
      *     requirements={"\d+"},
-     *     default="5",
+     *     default="%pagination%",
      *     description="The pagination limit."
      * )
      * @Rest\QueryParam(
@@ -132,12 +139,16 @@ class PhoneController extends BaseController
      * )
      *
      * @param PhoneManager $phoneManager
+     * @param Request $request
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return mixed
      *
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listAction(PhoneManager $phoneManager)
+    public function listAction(PhoneManager $phoneManager, Request $request, CacheManager $cacheManager)
     {
         $pagerPackage = $phoneManager->getPager();
 
@@ -152,6 +163,8 @@ class PhoneController extends BaseController
                 'phones'
             )
         );
+        $cacheManager->saveResourcesOnCache($paginatedCollection, $request);
+
         return $this->generateApiResponse($paginatedCollection, 200, 'phone_list');
     }
 
@@ -195,15 +208,23 @@ class PhoneController extends BaseController
      *
      * @param $mark
      * @param PhoneManager $phoneManager
+     * @param Request $request
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View
      *
      * @Security("is_granted('ROLE_USER')")
      */
-    public function listPhonesByMark($mark, PhoneManager $phoneManager)
+    public function listPhonesByMark($mark, PhoneManager $phoneManager, Request $request, CacheManager $cacheManager)
     {
+        $list = $phoneManager->listPhonesByMark($mark);
+
+        $cacheManager->saveResourcesOnCache($list, $request);
+
         return $this->generateApiResponse(
-            $phoneManager->listPhonesByMark($mark),
+            $list,
             200,
             'phone_list_mark',
             ['mark' => $mark]
@@ -270,21 +291,26 @@ class PhoneController extends BaseController
      *     name="phone_add"
      * )
      *
-     * @Security("is_granted('ROLE_SUPER_ADMIN')")
-     *
      * @Rest\View()
+     *
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
      *
      * @param Request $request
      * @param PhoneManager $phoneManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View
      */
-    public function createAction(Request $request, PhoneManager $phoneManager)
+    public function createAction(Request $request, PhoneManager $phoneManager, CacheManager $cacheManager)
     {
         $data = $phoneManager->addPhone($request);
+
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
+        $cacheManager->cleanCachedPhonesResources($data);
 
         return $this->generateApiResponse($data, 201, 'phone_add');
     }
@@ -337,12 +363,15 @@ class PhoneController extends BaseController
      * @param Phone $phone
      * @param Request $request
      * @param PhoneManager $phoneManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View
      *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function patchAction(Phone $phone, Request $request, PhoneManager $phoneManager)
+    public function patchAction(Phone $phone, Request $request, PhoneManager $phoneManager, CacheManager $cacheManager)
     {
         if (!$phone) {
             $this->createNotFoundException();
@@ -352,6 +381,8 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
+        $cacheManager->cleanCachedPhonesResources($phone);
+
         return $this->generateApiResponse($data, 200, 'phone_update_patch', ['id' => $phone->getId()]);
     }
 
@@ -401,12 +432,15 @@ class PhoneController extends BaseController
      * @param Phone $phone
      * @param Request $request
      * @param PhoneManager $phoneManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @return \FOS\RestBundle\View\View
      *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function putAction(Phone $phone, Request $request, PhoneManager $phoneManager)
+    public function putAction(Phone $phone, Request $request, PhoneManager $phoneManager, CacheManager $cacheManager)
     {
         if (!$phone) {
             $this->createNotFoundException();
@@ -416,6 +450,8 @@ class PhoneController extends BaseController
         if (is_array($data)) {
             $this->throwApiProblemValidationException($data);
         }
+        $cacheManager->cleanCachedPhonesResources($phone);
+
         return $this->generateApiResponse($data, 200, 'phone_update_put', ['id' => $phone->getId()]);
     }
 
@@ -461,14 +497,18 @@ class PhoneController extends BaseController
      *
      * @param Phone $phone
      * @param PhoneManager $phoneManager
+     * @param CacheManager $cacheManager
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Security("is_granted('ROLE_SUPER_ADMIN')")
      */
-    public function deleteAction(Phone $phone, PhoneManager $phoneManager)
+    public function deleteAction(Phone $phone, PhoneManager $phoneManager, CacheManager $cacheManager)
     {
         if (!$phone) {
             $this->createNotFoundException();
         }
+        $cacheManager->cleanCachedPhonesResources($phone);
 
         $phoneManager->deletePhone($phone);
     }

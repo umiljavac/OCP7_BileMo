@@ -76,6 +76,7 @@ class UserManager
         );
         $pagerPackage['pager'] = $pager;
         $pagerPackage['keyword'] = $this->paramFetcher->get('keyword');
+        $pagerPackage['clientId'] = $this->getClientId($request);
         return $pagerPackage;
     }
 
