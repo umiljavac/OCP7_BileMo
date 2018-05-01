@@ -8,20 +8,13 @@
 
 namespace App\Controller;
 
-use App\Service\Cache\CacheService;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 class CacheController
 {
-    private $cacheService;
     private $data;
     private $key;
-
-    public function __construct(CacheService $cacheService)
-    {
-        $this->cacheService = $cacheService;
-    }
 
     /**
      * @param mixed $data
