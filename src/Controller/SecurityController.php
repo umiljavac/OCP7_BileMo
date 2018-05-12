@@ -58,8 +58,7 @@ class SecurityController extends BaseController
                     [
                     'username' => $user->getUsername(),
                     'roles' => $user->getRoles(),
-                    'client' => $user->getClient()->getid(),
-                    'exp' => time() + 3600 // 1 hour expiration
+                    'client' => $user->getClient()->getid()
                     ]
                 );
             return new JsonResponse(

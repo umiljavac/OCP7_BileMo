@@ -29,7 +29,7 @@ class SecurityControllerTest extends BaseTest
         $this->assertEquals($roles, $decodedToken['roles']);
         $this->assertEquals($client, $decodedToken['client']);
         $this->assertEquals(self::SUPER_ADMIN, $decodedToken['username']);
-        $this->assertEquals(time() + 3600, $decodedToken['exp']);
+        $this->assertEquals(time() + 7200, $decodedToken['exp']);
     }
 
     public function testTokenAuthorizationHeader()

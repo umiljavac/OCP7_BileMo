@@ -48,7 +48,7 @@ class ApiCacheSubscriber implements EventSubscriberInterface
                 if ($this->cacheService->isCached($formatedUri)) {
                     $data = $this->cacheService->getCachedResources($formatedUri);
 
-                    $controller = new CacheController($this->cacheService);
+                    $controller = new CacheController();
                     $controller->setData($data);
                     $controller->setKey($requestUri);
 
