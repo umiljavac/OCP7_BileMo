@@ -5,7 +5,7 @@ Seventh project of OpenClassrooms "Développeur d'application PHP/Symfony" cursu
 
 ## 1-Intro 
 The aim of this project is to create a B2B ecommerce of cellphones by providing to clients an API REST.  
-So we have to reach the fourth level of Richardson's model. 
+So we have to reach the third level of Richardson's model. 
   
 ## 2-Requirements
 This project use Symfony 4 framework and Symfony 4 requires PHP version > 7.1.3 to run. 
