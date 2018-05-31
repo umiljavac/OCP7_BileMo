@@ -63,7 +63,7 @@ abstract class BaseTest extends KernelTestCase
         $token = $this->getService('lexik_jwt_authentication.encoder')
             ->encode([
                 'username' => $username,
-                'exp' => time() + 3600
+                'exp' => time() + 7200
             ]);
 
         $headers['Authorization'] = 'Bearer ' . $token;
